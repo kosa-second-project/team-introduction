@@ -1,0 +1,233 @@
+/* ==========================================================================
+   PARTY TAB (파티 편성 / 드래그 앤 드롭)
+   ========================================================================== */
+.party-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-xl);
+}
+
+.party-pool-panel {
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-lg);
+}
+
+.party-pool-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.party-pool-item {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-hairline-strong);
+  border-radius: var(--rounded-md);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: grab;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.party-pool-item:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-surface-3);
+  transform: scale(1.02);
+}
+
+.party-pool-item:active {
+  cursor: grabbing;
+}
+
+.item-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rounded-xs);
+  background-color: var(--color-surface-4);
+  border: 1px solid var(--color-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.item-class {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-primary-hover);
+  text-transform: uppercase;
+}
+
+/* 드롭 타겟 슬롯 */
+.party-lineup-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.lineup-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.party-slot-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.slot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.slot-role {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.slot-multiplier {
+  font-size: 11px;
+}
+
+.party-slot {
+  height: 96px;
+  background-color: var(--color-canvas);
+  border: 2px dashed var(--color-hairline-strong);
+  border-radius: var(--rounded-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.party-slot.drag-over {
+  border-color: var(--color-primary);
+  background-color: rgba(94, 106, 210, 0.05);
+  box-shadow: 0 0 12px rgba(94, 106, 210, 0.2);
+}
+
+.slot-placeholder {
+  font-size: 12px;
+  color: var(--color-ink-tertiary);
+  text-align: center;
+}
+
+/* 파티에 배치된 캐릭터 카드 */
+.slotted-character {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-hairline-strong);
+  border-radius: var(--rounded-md);
+  padding: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: popIn var(--transition-fast);
+  cursor: grab;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.slotted-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.btn-remove-slotted {
+  background: transparent;
+  border: none;
+  color: var(--color-ink-subtle);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 var(--space-xxs);
+  line-height: 1;
+}
+
+.btn-remove-slotted:hover {
+  color: var(--color-health);
+}
+
+/* 종합 파티 스탯 리포트 */
+#party-stat-card {
+  margin-top: var(--space-md);
+}
+
+.party-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-hairline);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.text-large {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.party-stats-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.party-stat-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 40px;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.stat-bar-container {
+  background-color: var(--color-surface-3);
+  height: 8px;
+  border-radius: var(--rounded-pill);
+  overflow: hidden;
+  border: 1px solid var(--color-hairline-strong);
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: var(--rounded-pill);
+  width: 0%;
+  transition: width var(--transition-slow);
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* ==========================================================================
