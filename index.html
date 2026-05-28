@@ -5,29 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DEVELOPERS GOLD - 4조 개발자 도감</title>
   
-  <!-- 실시간 JS 에러 화면 표시 디버거 -->
-  <script>
-    window.addEventListener('error', function(e) {
-      var div = document.createElement('div');
-      div.id = 'js-debug-error-overlay';
-      div.style.position = 'fixed';
-      div.style.top = '0';
-      div.style.left = '0';
-      div.style.width = '100%';
-      div.style.background = '#e74c3c';
-      div.style.color = '#fff';
-      div.style.zIndex = '999999';
-      div.style.padding = '15px';
-      div.style.fontFamily = 'monospace';
-      div.style.fontSize = '14px';
-      div.style.lineHeight = '1.5';
-      div.style.whiteSpace = 'pre-wrap';
-      div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
-      div.textContent = '❌ JS 에러 감지: ' + e.message + '\n파일: ' + e.filename + ' (줄: ' + e.lineno + ', 열: ' + e.colno + ')\n' + (e.error ? e.error.stack : '');
-      document.body.appendChild(div);
-    });
-  </script>
-  
   <!-- 레트로 구글 폰트 및 눈누 둥근모꼴 한글 픽셀 폰트 로드 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +20,7 @@
     }
   </style>
   
-  <link rel="stylesheet" href="styles.css?v=20260528-team-dex">
+  <link rel="stylesheet" href="src/styles/main.css?v=20260529-structure">
 </head>
 <body>
   
@@ -320,36 +297,7 @@
                     <!-- 아이템 리스트 -->
                     <div class="drag-items-box">
                       <div class="box-title">🛠️ 장비 보관함 (드래그)</div>
-                      <div class="drag-item-list" id="items-drag-box">
-                        <div class="drag-item-node" draggable="true" data-item-id="macbook">
-                          <span class="drag-node-ico">💻</span>
-                          <div class="drag-node-details">
-                            <div class="node-name">맥북 프로</div>
-                            <div class="node-boost">코딩+15 스피드+10</div>
-                          </div>
-                        </div>
-                        <div class="drag-item-node" draggable="true" data-item-id="headphones">
-                          <span class="drag-node-ico">🎧</span>
-                          <div class="drag-node-details">
-                            <div class="node-name">헤드폰</div>
-                            <div class="node-boost">디버깅+20</div>
-                          </div>
-                        </div>
-                        <div class="drag-item-node" draggable="true" data-item-id="glasses">
-                          <span class="drag-node-ico">👓</span>
-                          <div class="drag-node-details">
-                            <div class="node-name">보안경</div>
-                            <div class="node-boost">디자인+15 디버깅+5</div>
-                          </div>
-                        </div>
-                        <div class="drag-item-node" draggable="true" data-item-id="coffee">
-                          <span class="drag-node-ico">☕</span>
-                          <div class="drag-node-details">
-                            <div class="node-name">아메리카노</div>
-                            <div class="node-boost">스피드+15 코딩+5</div>
-                          </div>
-                        </div>
-                      </div>
+                      <div class="drag-item-list" id="items-drag-box"></div>
                       <div class="custom-item-maker">
                         <div class="box-title">직접 그린 아이템 만들기</div>
                         <div class="item-maker-layout">
@@ -461,10 +409,6 @@
     
   </div>
 
-  <script src="data.js?v=20260528-team-dex"></script>
-  <script src="audio.js?v=20260528-monitor-sprites"></script>
-  <script src="engine.js?v=20260528-battle-pokemon"></script>
-  <script src="dragdrop.js"></script>
-  <script src="app.js?v=20260528-team-dex"></script>
+  <script type="module" src="src/main.js?v=20260529-structure"></script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+server*.log
+assets/source/
+assets/map/tiles/backup-before-veridia/
+.DS_Store

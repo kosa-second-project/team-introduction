@@ -1,0 +1,16 @@
+import "./data/data.js";
+import "./core/state.js";
+import "./ui/renderers.js";
+import "./core/input.js";
+import "./core/pokeball-config.js";
+import "./features/audio/audio.js";
+import "./features/world/engine.js";
+import "./features/inventory/dragdrop.js";
+import "./app/App.js";
+import "./app/modules/storage.js";
+import "./features/battle/capture.js";
+import "./app/modules/controls.js";
+import "./features/battle/battle.js";
+import "./features/pokedex/pokedex.js";
+import "./features/inventory/custom-items.js";
+import "./app/bootstrap.js";

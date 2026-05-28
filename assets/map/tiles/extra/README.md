@@ -22,5 +22,5 @@ Additional tile assets for the pixel RPG map. These are kept separate from the c
 ## Notes
 
 - Pokemon-owned art was not downloaded or copied. These are open/free assets with a similar top-down JRPG or isometric pixel feel.
-- Original downloads and full extracted packs are stored in `assets/source/tilesets/`.
+- Original downloads and full extracted packs are excluded from the app repository.
 - The current game does not load these automatically yet. Copy/adapt selected tiles into the main `assets/map/tiles/` set or add new keys to `WORLD_TILE_ASSETS` when a map pass is ready.
