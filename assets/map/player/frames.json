@@ -1,0 +1,24 @@
+{
+  "frameSize": {
+    "width": 37,
+    "height": 50
+  },
+  "directions": {
+    "front": {
+      "idle": "front-1.png",
+      "walk": ["front-2.png"]
+    },
+    "back": {
+      "idle": "back-1.png",
+      "walk": ["back-2.png"]
+    },
+    "left": {
+      "idle": "left-1.png",
+      "walk": ["left-2.png"]
+    },
+    "right": {
+      "idle": "right-1.png",
+      "walk": ["right-2.png"]
+    }
+  }
+}

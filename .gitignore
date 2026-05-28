@@ -1,5 +1,3 @@
-.DS_Store
-node_modules/
-.idea/
-.vscode/
-*.log
+﻿server*.log
+assets/source/
+*.tmp

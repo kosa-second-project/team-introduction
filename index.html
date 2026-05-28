@@ -3,731 +3,468 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="코딩 길드(2조 성소)에 오신 것을 환영합니다. 우리 파티원들의 프로필, 퀘스트 진행 상태, 길드 본부 위치를 확인하고 파티원들을 드래그 앤 드롭하여 액티브 전투 파티를 구성해보세요.">
-  <title>The Coding Guild - Team 2 Introduction</title>
-  <!-- Google Fonts 로드: 가독성 높은 Inter, 세련된 제목용 Cinzel, 게임 느낌의 Share Tech Mono -->
+  <title>DEVELOPERS GOLD - 4조 개발자 도감</title>
+  
+  <!-- 실시간 JS 에러 화면 표시 디버거 -->
+  <script>
+    window.addEventListener('error', function(e) {
+      var div = document.createElement('div');
+      div.id = 'js-debug-error-overlay';
+      div.style.position = 'fixed';
+      div.style.top = '0';
+      div.style.left = '0';
+      div.style.width = '100%';
+      div.style.background = '#e74c3c';
+      div.style.color = '#fff';
+      div.style.zIndex = '999999';
+      div.style.padding = '15px';
+      div.style.fontFamily = 'monospace';
+      div.style.fontSize = '14px';
+      div.style.lineHeight = '1.5';
+      div.style.whiteSpace = 'pre-wrap';
+      div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+      div.textContent = '❌ JS 에러 감지: ' + e.message + '\n파일: ' + e.filename + ' (줄: ' + e.lineno + ', 열: ' + e.colno + ')\n' + (e.error ? e.error.stack : '');
+      document.body.appendChild(div);
+    });
+  </script>
+  
+  <!-- 레트로 구글 폰트 및 눈누 둥근모꼴 한글 픽셀 폰트 로드 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 둥근모꼴 한글 픽셀 폰트 정의 */
+    @font-face {
+      font-family: 'DungGeunMo';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="styles.css?v=20260528-team-dex">
 </head>
 <body>
-  <!-- BGM을 위한 HTML Audio 태그 -->
-  <!-- 외부 링크가 끊길 경우를 위해 Web Audio API 신디사이저로 효과음을 내고, BGM은 w3schools 샘플을 사용하거나 JS에서 사운드를 자체 생성할 수도 있도록 설계합니다. -->
-  <audio id="bgm-player" loop preload="auto">
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- 메인 길드 인터페이스 컨테이너 -->
-  <div id="guild-container">
+  
+  <!-- 메인 아케이드 모니터 뷰포트 -->
+  <div class="game-container">
     
-    <!-- 상단 헤더: 대시보드 및 오디오 컨트롤 -->
-    <header id="guild-header">
-      <div class="header-main">
-        <h1 id="guild-title">THE CODING GUILD</h1>
-        <div id="guild-subtitle">TEAM 2's SANCTUARY</div>
-      </div>
+    <div class="game-monitor-bezel">
+      <div class="monitor-brand">DEVELOPERS GOLD VERSION (2026)</div>
       
-      <!-- 플레이어 길드 스탯 대시보드 (Web Storage 연동) -->
-      <div id="player-dashboard">
-        <div class="dashboard-stat">
-          <span class="stat-label">LV.</span>
-          <span id="player-level" class="stat-value">1</span>
-        </div>
-        <div class="dashboard-xp-container">
-          <div class="xp-bar-bg">
-            <div id="player-xp-bar" class="xp-bar-fill" style="width: 0%;"></div>
-          </div>
-          <span class="xp-text"><span id="player-xp">0</span> / 100 XP</span>
-        </div>
-        <div class="dashboard-stat">
-          <span class="stat-label">GOLD</span>
-          <span id="player-gold" class="stat-value gold-color">100 G</span>
-        </div>
-      </div>
-
-      <!-- 오디오 조절 판넬 (HTML Audio API 제어) -->
-      <div id="audio-control-panel">
-        <button id="btn-toggle-bgm" class="btn-audio-icon" aria-label="배경음악 토글">
-          <!-- Play Icon -->
-          <svg id="svg-audio-play" viewBox="0 0 24 24" class="svg-icon">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-          <!-- Mute Icon (Hidden by default) -->
-          <svg id="svg-audio-mute" viewBox="0 0 24 24" class="svg-icon hidden">
-            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zM12 4L9.91 6.09 12 8.18V4zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.03c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3z"/>
-          </svg>
-        </button>
-        <div class="volume-slider-container">
-          <svg viewBox="0 0 24 24" class="svg-icon-small">
-            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-          </svg>
-          <input type="range" id="slider-volume" min="0" max="1" step="0.05" value="0.5" aria-label="볼륨 조절">
-        </div>
-      </div>
-    </header>
-
-    <!-- 네비게이션 탭 -->
-    <nav id="guild-navigation">
-      <button id="tab-tavern" class="nav-tab active" data-tab="sec-tavern">
-        <span class="tab-icon">🍻</span> 선술집 (Tavern)
-      </button>
-      <button id="tab-roster" class="nav-tab" data-tab="sec-roster">
-        <span class="tab-icon">🛡️</span> 길드원 (Roster)
-      </button>
-      <button id="tab-map" class="nav-tab" data-tab="sec-map">
-        <span class="tab-icon">🗺️</span> 세계 지도 (Map)
-      </button>
-      <button id="tab-party" class="nav-tab" data-tab="sec-party">
-        <span class="tab-icon">⚔️</span> 파티 편성 (Party)
-      </button>
-      <button id="tab-game" class="nav-tab" data-tab="sec-game">
-        <span class="tab-icon">🎮</span> 보스 던전 (Dungeon)
-      </button>
-    </nav>
-
-    <!-- 메인 콘텐츠 영역 -->
-    <main id="guild-content">
-      
-      <!-- 1. 선술집 (Tavern / 로비) 탭 -->
-      <section id="sec-tavern" class="tab-section active">
-        <div class="tavern-layout">
-          <!-- 왼쪽: 웰컴 메시지 및 퀘스트 보드 -->
-          <div class="tavern-main">
-            <div class="hero-block">
-              <span class="section-eyebrow">GUILD ANNOUNCEMENT</span>
-              <h2 class="display-lg">용사들이여, 보스 레이드가 머지않았다</h2>
-              <p class="subhead">2조 코딩 길드에 합류한 것을 환영하네. 우리는 6월 1일로 예정된 거대한 보스 레이드(최종 발표)를 대비하기 위해 모였다네. 각자의 강력한 기술과 스탯으로 파티를 꾸려 레이드를 성공적으로 완료하게나!</p>
+      <!-- 실제 실감형 플레이 스크린 -->
+      <div class="monitor-screen" id="game-screen">
+        
+        <!-- 1) 인트로/오프닝 패널 (CSS 동적 배경으로 교체) -->
+        <div class="screen-panel" id="panel-intro">
+          <div class="intro-bg">
+            <!-- 별 파티클 레이어 (JS로 생성) -->
+            <div class="intro-star-field" id="intro-star-field"></div>
+            <!-- 배경 픽셀 장식 몬스터 (CSS 레이어) -->
+            <div class="intro-deco-layer" aria-hidden="true">
+              <img class="intro-deco-mon mon-1" src="assets/battle/pikachu.png" alt="">
+              <img class="intro-deco-mon mon-2" src="assets/battle/charmander.png" alt="">
+              <img class="intro-deco-mon mon-3" src="assets/battle/squirtle.png" alt="">
+              <img class="intro-deco-mon mon-4" src="assets/battle/eevee.png" alt="">
             </div>
-            
-            <!-- 퀘스트 보드 (칸반 스타일) -->
-            <div class="quest-board">
-              <h3 class="card-title">길드 의뢰 게시판 (Guild Board)</h3>
-              <div class="kanban-board">
-                
-                <!-- 1. 회의 컬럼 -->
-                <div class="kanban-column column-meetings">
-                  <div class="column-header">
-                    <span class="column-title">🗣️ 회의 (Meetings)</span>
-                    <span class="column-count">1</span>
-                  </div>
-                  <div class="column-content">
-                    <div id="quest-card-auto-1" draggable="true" class="quest-card quest-completed">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">MEETING</span>
-                        <span class="quest-status-badge status-completed">완료</span>
-                      </div>
-                      <span class="quest-title font-bold">협업 방식 건의</span>
-                      <p class="quest-date">2026년 5월 20일</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 2. 과제 컬럼 -->
-                <div class="kanban-column column-assignments">
-                  <div class="column-header">
-                    <span class="column-title">📜 과제 (Assignments)</span>
-                    <span class="column-count">4</span>
-                  </div>
-                  <div class="column-content">
-                    <div id="quest-card-auto-2" draggable="true" class="quest-card quest-inprogress">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-gold">TASK</span>
-                        <span class="quest-status-badge status-inprogress">진행 중</span>
-                      </div>
-                      <span class="quest-title font-bold">WSL 사용한 WEB SERVER 구축</span>
-                      <p class="quest-date">2026년 5월 20일 → 5월 27일</p>
-                    </div>
-
-                    <!-- 중간 보스 -->
-                    <div id="quest-card-auto-3" draggable="true" class="quest-card quest-midboss">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-red active-glow">MID BOSS</span>
-                        <span class="quest-status-badge status-inprogress">진행 중</span>
-                      </div>
-                      <span class="quest-title font-bold" style="color: var(--color-gold);">조별 소개 페이지 만들기 (발표)</span>
-                      <p class="quest-date">2026년 5월 20일 → 6월 1일</p>
-                      <p class="quest-desc" style="font-size: 11px; margin-top: 4px; color: var(--color-ink-muted);">조별 소개 반응형 웹페이지 구현 및 발표회 수행</p>
-                    </div>
-
-                    <!-- 클릭 가능 서브 퀘스트 1 -->
-                    <div class="quest-card sub-quest" draggable="true" id="quest-click-1">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">SUB QUEST</span>
-                        <span class="quest-status-badge status-action">진행 중</span>
-                      </div>
-                      <span class="quest-title font-bold">5대 HTML API 마스터</span>
-                      <p class="quest-desc" style="font-size: 11px; color: var(--color-ink-muted);">Geolocation, Drag & Drop, Web Storage, Video, Audio API 완벽 마스터</p>
-                      <div class="quest-rewards" style="margin-top: 4px; font-size: 10px;">
-                        <span class="reward-item">💎 보상: <span class="gold-color">150 G</span></span>
-                      </div>
-                      <div class="quest-status" style="margin-top: 6px;">
-                        <span class="status-btn" id="btn-complete-q1" style="font-size: 10px; padding: 4px 8px;">완료 보고</span>
-                      </div>
-                    </div>
-
-                    <!-- 클릭 가능 서브 퀘스트 2 -->
-                    <div class="quest-card sub-quest" draggable="true" id="quest-click-2">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">SUB QUEST</span>
-                        <span class="quest-status-badge status-action">진행 중</span>
-                      </div>
-                      <span class="quest-title font-bold">길드 본부와 동기화</span>
-                      <p class="quest-desc" style="font-size: 11px; color: var(--color-ink-muted);">Geolocation 권한을 승인하여 자신의 위치와 본부 거리 동기화</p>
-                      <div class="quest-rewards" style="margin-top: 4px; font-size: 10px;">
-                        <span class="reward-item">💎 보상: <span class="gold-color">200 G</span></span>
-                      </div>
-                      <div class="quest-status" style="margin-top: 6px;">
-                        <span class="status-btn" id="btn-complete-q2" style="font-size: 10px; padding: 4px 8px;">완료 보고</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 3. 스터디 컬럼 -->
-                <div class="kanban-column column-studies">
-                  <div class="column-header">
-                    <span class="column-title">📖 스터디 (Studies)</span>
-                    <span class="column-count">9</span>
-                  </div>
-                  <div class="column-content">
-                    <div id="quest-card-auto-4" draggable="true" class="quest-card quest-completed">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-completed">완료</span>
-                      </div>
-                      <span class="quest-title font-bold">스터디 계획</span>
-                      <p class="quest-date">2026년 5월 20일</p>
-                    </div>
-
-                    <div id="quest-card-auto-5" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-gold">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">시작 전</span>
-                      </div>
-                      <span class="quest-title font-bold">[1주차] 전체 아키텍처 흐름 이해하기</span>
-                      <p class="quest-date">2026년 5월 22일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-6" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[2주차] HTTP 프로토콜 및 REST API 설계</span>
-                      <p class="quest-date">2026년 5월 29일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-7" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[3주차] Git / GitHub 브랜치 전략 협업</span>
-                      <p class="quest-date">2026년 6월 5일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-8" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[4주차] SQL 기초 및 데이터베이스 정규화</span>
-                      <p class="quest-date">2026년 6월 12일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-9" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[5주차] 프론트엔드 성능 최적화 및 빌드 도구</span>
-                      <p class="quest-date">2026년 6월 19일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-10" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[6주차] 클라우드 인프라 기초 (AWS/Vercel)</span>
-                      <p class="quest-date">2026년 6월 26일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-11" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[7주차] CI/CD 자동화 배포 파이프라인</span>
-                      <p class="quest-date">2026년 7월 3일 (금)</p>
-                    </div>
-
-                    <div id="quest-card-auto-12" draggable="true" class="quest-card quest-upcoming">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-lavender">STUDY</span>
-                        <span class="quest-status-badge status-upcoming">대기 중</span>
-                      </div>
-                      <span class="quest-title font-bold">[8주차] 프로젝트 최종 리팩토링 및 모니터링</span>
-                      <p class="quest-date">2026년 7월 10일 (금)</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 4. 프로젝트 컬럼 -->
-                <div class="kanban-column column-projects">
-                  <div class="column-header">
-                    <span class="column-title">⚔️ 프로젝트 (Projects)</span>
-                    <span class="column-count">1</span>
-                  </div>
-                  <div class="column-content">
-                    <!-- 최종 보스 -->
-                    <div id="quest-card-auto-13" draggable="true" class="quest-card quest-finalboss">
-                      <div class="quest-header">
-                        <span class="quest-badge badge-red active-glow">FINAL BOSS</span>
-                        <span class="quest-status-badge status-boss">토벌 대기</span>
-                      </div>
-                      <span class="quest-title font-bold" style="color: var(--color-red); font-size: 13px;">2차 프로젝트 (Raid)</span>
-                      <p class="quest-date">2026년 6월 25일 → 7월 8일</p>
-                      <p class="quest-desc" style="font-size: 11px; margin-top: 4px; color: var(--color-ink-muted);">조별 2차 프로젝트 완벽 수행 및 최종 마감일 사수!</p>
-                      <div class="quest-rewards" style="margin-top: 8px;">
-                        <span class="reward-item" style="font-size: 10px;">💎 보상: <span class="gold-color">1000 G</span></span>
-                        <span class="reward-item" style="font-size: 10px;">✨ 경험치: <span class="xp-color">2000 XP</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
+            <div class="intro-overlay">
+              <!-- 게임 로고 영역 -->
+              <div class="intro-logo-wrap">
+                <div class="intro-logo-pocket">포켓몬스터</div>
+                <div class="intro-logo-gold">DEVELOPERS GOLD</div>
+                <div class="intro-logo-badge">✦ VERSION 2026 ✦</div>
               </div>
+              <div class="intro-hero-sprites" aria-hidden="true">
+                <img class="intro-trainer-sprite" src="assets/map/player/front-1.png" alt="">
+                <img class="intro-wild-sprite" src="assets/battle/snorlax.png" alt="">
+              </div>
+              <p class="intro-subtitle">HTML · CSS · JS로 구현한 포트폴리오 모험</p>
+              <div class="start-prompt blink" id="start-prompt-btn">PRESS START</div>
+              <div class="geolocation-info" id="geo-info">GPS 확인 중...</div>
             </div>
           </div>
-          
-          <!-- 오른쪽: 마법의 거울 (HTML Video 플레이어) -->
-          <div class="tavern-sidebar">
-            <div id="scrying-mirror" class="product-screenshot-card">
-              <span class="eyebrow">SCRYING MIRROR</span>
-              <h3 class="card-title">길드 아카이브 (Intro Video)</h3>
-              <p class="body-sm">마법의 거울을 활성화하여 길드 활동의 흔적을 비추어 보십시오.</p>
-              
-              <!-- 커스텀 스타일링 비디오 컨테이너 -->
-              <div class="video-wrapper">
-                <video id="guild-video" preload="metadata" playsinline>
-                  <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-                  브라우저가 비디오 태그를 지원하지 않습니다.
-                </video>
-                
-                <!-- 비디오 오버레이 컨트롤 플레이어 -->
-                <div class="video-controls-overlay">
-                  <button id="btn-video-play" class="btn-video-action" aria-label="재생">
-                    <!-- Play -->
-                    <svg viewBox="0 0 24 24" class="svg-icon-mid">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </button>
-                  <button id="btn-video-pause" class="btn-video-action hidden" aria-label="일시정지">
-                    <!-- Pause -->
-                    <svg viewBox="0 0 24 24" class="svg-icon-mid">
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                    </svg>
-                  </button>
-                  
-                  <div class="video-progress-bar">
-                    <div id="video-progress-fill" class="video-progress-fill"></div>
-                  </div>
-
-                  <div class="video-control-row">
-                    <button id="btn-video-mute" class="btn-video-action-small">
-                      <svg id="svg-video-unmute" viewBox="0 0 24 24" class="svg-icon-small">
-                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-                      </svg>
-                      <svg id="svg-video-muted" viewBox="0 0 24 24" class="svg-icon-small hidden">
-                        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.03c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3z"/>
-                      </svg>
-                    </button>
-                    <span id="video-time-display" class="mono">0:00 / 0:00</span>
-                  </div>
-                </div>
-              </div>
-              <div class="video-caption-box">
-                <span class="badge-green">ONLINE</span>
-                <span class="caption">아카이브 마법 구동 중... (HTML5 Video)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2. 길드원 모집 (Guild Roster / 조원 소개) 탭 -->
-      <section id="sec-roster" class="tab-section">
-        <div class="section-header-block">
-          <span class="section-eyebrow">GUILD ROSTER</span>
-          <h2 class="display-md">길드원 프로필</h2>
-          <p class="body">2조 코딩 길드를 이끄는 최정예 파티원들의 정보입니다. 각 카드를 클릭하여 상세 모달 캐릭터 시트를 확인해보세요.</p>
         </div>
         
-        <!-- 조원 리스트 그리드 -->
-        <div class="roster-grid" id="roster-container">
-          <!-- JS에서 동적으로 채워질 예정 (이유경, 김영만, 김준하, 이주영) -->
-        </div>
-      </section>
-
-      <!-- 3. 세계 지도 (Guild Map / Geolocation) 탭 -->
-      <section id="sec-map" class="tab-section">
-        <div class="map-layout">
-          <div class="map-info">
-            <span class="section-eyebrow">WORLD MAP & RADAR</span>
-            <h2 class="display-md">길드 GPS 위치 게이트</h2>
-            <p class="body">Geolocation API를 통해 당신의 현재 좌표를 분석하여 '2조 코딩 길드 본부(강의실)' 및 각 길드원들의 은신처까지의 물리적 거리를 산출해 줍니다.</p>
-            
-            <div class="location-trigger-box">
-              <button id="btn-get-location" class="button-primary">📍 내 위치 분석 및 동기화</button>
-            </div>
-            
-            <!-- 위치 분석 결과 로그판 -->
-            <div id="location-status-card" class="pricing-card">
-              <h3 class="card-title">GPS 위치 분석 로그</h3>
-              <div id="location-coords" class="coords-display mono">
-                위치 권한을 승인해 주시면 GPS 탐색이 시작됩니다.
-              </div>
-              <hr class="hairline-divider">
-              <div id="distance-results" class="distance-results-list">
-                <p class="body-sm text-center">동기화 전에는 본부 위치가 표시되지 않습니다.</p>
-              </div>
-            </div>
+        <!-- 2) 오박사 대화 패널 (포켓몬 골드 오리지널 오프닝 스타일) -->
+        <div class="screen-panel hidden" id="panel-dialogue">
+          <!-- 배경: 연구소 그라데이션 및 픽셀 그리드 -->
+          <div class="oak-scene-bg">
+            <div class="oak-lab-grid"></div>
+            <!-- 연구소 소품 장식 -->
+            <div class="oak-lab-shelf"></div>
+            <div class="oak-lab-pc"></div>
           </div>
-          
-          <div class="map-visual">
-            <div class="compass-radar-card product-screenshot-card">
-              <div class="radar-outer">
-                <div class="radar-sweep"></div>
-                <div class="radar-grid-circle circle-1"></div>
-                <div class="radar-grid-circle circle-2"></div>
-                <div class="radar-grid-circle circle-3"></div>
-                <div class="radar-crosshair-h"></div>
-                <div class="radar-crosshair-v"></div>
-                <!-- 레이다 상 본부 및 사용자 표식 -->
-                <div id="radar-blip-hq" class="radar-blip hq-blip hidden" data-label="길드 HQ"></div>
-                <div id="radar-blip-user" class="radar-blip user-blip hidden" data-label="나"></div>
-              </div>
-              <div class="radar-legend">
-                <span class="legend-item"><span class="legend-dot dot-purple"></span>길드 본부 (HQ)</span>
-                <span class="legend-item"><span class="legend-dot dot-green"></span>현재 사용자</span>
-              </div>
+          <!-- 오박사 스탠딩 스프라이트 (화면 중앙 하단) -->
+          <div class="oak-standing-wrap">
+            <img class="oak-standing-img" src="assets/story/professor.png" alt="오박사" id="oak-sprite-img">
+          </div>
+          <!-- 하단 레트로 대화 텍스트 박스 -->
+          <div class="oak-dialogue-bottom" id="oak-dialogue-bottom">
+            <div class="oak-dialogue-inner">
+              <div class="oak-dialogue-text" id="dialogue-text-content">오박사: 앗! 안녕하신가! 개발자 월드에 오신 것을 환영하네!</div>
+              <div class="oak-dialogue-arrow blink">▼</div>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- 4. 파티 편성 (Party Setup / 드래그 앤 드롭) 탭 -->
-      <section id="sec-party" class="tab-section">
-        <div class="party-layout">
-          <!-- 좌측: 드래그 가능한 조원 카드 목록 -->
-          <div class="party-pool-panel">
-            <span class="section-eyebrow">AVAILABLE HEROES</span>
-            <h3 class="headline">대기 중인 길드원</h3>
-            <p class="body-sm text-muted">원하는 조원 카드를 클릭 후 우측 파티 슬롯으로 드래그 앤 드롭하여 배치하세요.</p>
-            
-            <div id="drag-source-pool" class="party-pool-grid">
-              <!-- JS에서 동적으로 채워질 대기 카드 영역 -->
-            </div>
-          </div>
-          
-          <!-- 우측: 드롭 영역 (전투 라인업) -->
-          <div class="party-lineup-panel">
-            <span class="section-eyebrow">COMBAT LINEUP</span>
-            <h3 class="headline">액티브 파티 슬롯</h3>
-            <p class="body-sm text-muted">각 역할 슬롯에 가장 알맞은 파티원을 드롭하여 배치해보세요.</p>
-            
-            <div class="lineup-slots-grid">
-              <!-- Vanguard 슬롯 -->
-              <div class="party-slot-container">
-                <div class="slot-header">
-                  <span class="slot-role">🛡️ VANGUARD (프론트엔드 통솔)</span>
-                  <span class="slot-multiplier text-muted">x1.2 Frontend 보너스</span>
-                </div>
-                <div id="slot-vanguard" class="party-slot" data-role="vanguard">
-                  <span class="slot-placeholder">여기에 길드원을 드래그해 놓으세요.</span>
-                </div>
-              </div>
-              
-              <!-- Striker 슬롯 -->
-              <div class="party-slot-container">
-                <div class="slot-header">
-                  <span class="slot-role">⚔️ STRIKER (백엔드 돌격)</span>
-                  <span class="slot-multiplier text-muted">x1.2 Backend 보너스</span>
-                </div>
-                <div id="slot-striker" class="party-slot" data-role="striker">
-                  <span class="slot-placeholder">여기에 길드원을 드래그해 놓으세요.</span>
-                </div>
-              </div>
-
-              <!-- Supporter 슬롯 -->
-              <div class="party-slot-container">
-                <div class="slot-header">
-                  <span class="slot-role">✨ SUPPORTER (클라우드 & 인프라)</span>
-                  <span class="slot-multiplier text-muted">x1.2 Cloud/Infra 보너스</span>
-                </div>
-                <div id="slot-supporter" class="party-slot" data-role="supporter">
-                  <span class="slot-placeholder">여기에 길드원을 드래그해 놓으세요.</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 파티 스탯 리포트 -->
-            <div id="party-stat-card" class="pricing-card">
-              <div class="party-summary-header">
-                <h4 class="card-title">파티 종합 전투력</h4>
-                <div id="total-power-val" class="mono text-large gold-color">0</div>
-              </div>
-              <div class="party-stats-bars">
-                <!-- 파티 합산 스탯 리스트 -->
-                <div class="party-stat-row">
-                  <span class="body-sm">총 프론트엔드 (Frontend):</span>
-                  <div class="stat-bar-container">
-                    <div id="party-bar-leadership" class="stat-bar-fill bg-gold" style="width: 0%;"></div>
-                  </div>
-                  <span id="party-val-leadership" class="mono font-bold">0</span>
-                </div>
-                <div class="party-stat-row">
-                  <span class="body-sm">총 백엔드 (Backend):</span>
-                  <div class="stat-bar-container">
-                    <div id="party-bar-coding" class="stat-bar-fill bg-mana" style="width: 0%;"></div>
-                  </div>
-                  <span id="party-val-coding" class="mono font-bold">0</span>
-                </div>
-                <div class="party-stat-row">
-                  <span class="body-sm">총 클라우드 (Cloud):</span>
-                  <div class="stat-bar-container">
-                    <div id="party-bar-stability" class="stat-bar-fill bg-xp" style="width: 0%;"></div>
-                  </div>
-                  <span id="party-val-stability" class="mono font-bold">0</span>
-                </div>
-                <div class="party-stat-row">
-                  <span class="body-sm">총 인프라 (Infrastructure):</span>
-                  <div class="stat-bar-container">
-                    <div id="party-bar-infra" class="stat-bar-fill bg-health" style="width: 0%;"></div>
-                  </div>
-                  <span id="party-val-infra" class="mono font-bold">0</span>
-                </div>
-              </div>
-              <button id="btn-save-party" class="button-primary w-full">💾 파티 배치 저장 (Local Storage)</button>
-            </div>
+        
+        <!-- 3) 월드맵 플레이 패널 -->
+        <div class="screen-panel hidden" id="panel-world">
+          <canvas id="world-canvas" width="768" height="432"></canvas>
+          <div class="game-hud">
+            <div class="hud-item">[Enter] 메뉴 열기</div>
+            <div class="hud-item hud-location">DEVELOPER TOWN · ROUTE CSS</div>
+            <div class="hud-item" id="hud-trainer-name">지우</div>
           </div>
         </div>
-      </section>
-
-      <!-- 5. 보스 던전 (Dungeon / 미니게임) 탭 -->
-      <section id="sec-game" class="tab-section">
-        <div class="game-container card-panel">
-          <!-- 던전 타이틀/헤더 -->
-          <div class="game-header text-center" style="margin-bottom: 20px;">
-            <span class="badge-red active-glow" style="font-size: 11px; padding: 4px 10px;">BOSS RAID DUNGEON</span>
-            <h2 class="cinzel gold-color" style="margin-top: 8px; font-size: 28px; letter-spacing: 2px;">⚠️ 심연의 버그 대왕 (The Bug Overlord)</h2>
-            <p class="body-sm text-muted">편성된 3인 파티의 실시간 능력치를 바탕으로 자바스크립트 면접 퀴즈를 풀어 보스를 퇴치합니다!</p>
+        
+        <!-- 4) 포켓몬 골드 오리지널 배틀 패널 -->
+        <div class="screen-panel hidden" id="panel-battle">
+          <div class="encounter-splash hidden" id="encounter-splash">
+            <div class="encounter-scanlines"></div>
+            <img class="encounter-mon-img" src="assets/battle/snorlax.png" alt="야생 코드몬">
+            <div class="encounter-copy">
+              <span>WILD MONSTER</span>
+              <strong>야생 코드몬 발견!</strong>
+            </div>
           </div>
-
-          <!-- 전투 상황판 (Boss vs Party) -->
           <div class="battle-arena">
-            <!-- 왼쪽: 보스 상태 -->
-            <div class="arena-entity boss-entity text-center">
-              <div class="boss-avatar-box">👾</div>
-              <h3 class="boss-name font-bold">심연의 버그 대왕 (Level 99)</h3>
-              <div class="health-bar-wrapper">
-                <span class="bar-label mono" id="boss-hp-text" style="font-size: 11px; color: var(--color-ink-muted);">HP: 2000 / 2000</span>
-                <div class="health-bar-bg">
-                  <div id="boss-hp-bar" class="health-bar-fill bg-red" style="width: 100%;"></div>
+            
+            <!-- (1) 적 HUD 상태창 (좌측 상단 배치) -->
+            <div class="battle-hud enemy-hud">
+              <div class="hud-name-row">
+                <span class="hud-name" id="enemy-name">개발자몬</span>
+                <span class="hud-lv" id="enemy-level-tag">Lv99</span>
+              </div>
+              <div class="hud-hp-row">
+                <span class="hud-hp-lbl">HP:</span>
+                <div class="hud-hp-track">
+                  <div class="hud-hp-fill" id="enemy-hp-fill" style="width: 100%;"></div>
                 </div>
               </div>
-              <p class="entity-status text-muted" id="boss-action-status" style="font-size: 11px; margin-top: 4px;">조용히 잠자고 있음...</p>
+              <div class="hud-border-bottom"></div>
             </div>
-
-            <!-- VS 구분선 -->
-            <div class="battle-vs-line cinzel">VS</div>
-
-            <!-- 오른쪽: 아군 파티 상태 -->
-            <div class="arena-entity party-entity text-center">
-              <div class="party-avatars-row" id="game-party-avatars" style="margin-bottom: 8px;">
-                <!-- JS로 편성된 캐릭터 이모지가 출력됨 -->
-                <span>👤</span><span>👤</span><span>👤</span>
+            
+            <!-- (2) 적 캐릭터 스프라이트 (우측 상단 배치) -->
+            <div class="battle-sprite-box enemy-sprite-box">
+              <canvas id="enemy-battle-canvas" width="160" height="160"></canvas>
+            </div>
+            
+            <!-- (3) 플레이어 캐릭터 스프라이트 (좌측 하단 배치) -->
+            <div class="battle-sprite-box player-sprite-box">
+              <canvas id="player-battle-canvas" width="160" height="160"></canvas>
+            </div>
+            
+            <!-- 🔴 몬스터볼 포획 시네마틱 렌더링을 위한 가상 볼 액터 -->
+            <div class="pokeball-picker hidden" id="pokeball-picker" aria-label="몬스터볼 선택"></div>
+            <div class="pokeball-trajectory hidden" id="pokeball-trajectory"></div>
+            <div class="pokeball-actor hidden" id="pokeball-actor"></div>
+            
+            <!-- (4) 플레이어 HUD 상태창 (우측 하단 배치) -->
+            <div class="battle-hud player-hud">
+              <div class="hud-name-row">
+                <span class="hud-name" id="player-trainer-name">지우</span>
+                <span class="hud-lv">Lv50</span>
               </div>
-              <h3 class="party-name font-bold">원정대 파티</h3>
-              <div class="health-bar-wrapper">
-                <span class="bar-label mono" id="party-hp-text" style="font-size: 11px; color: var(--color-ink-muted);">HP: 1000 / 1000</span>
-                <div class="health-bar-bg">
-                  <div id="party-hp-bar" class="health-bar-fill bg-health" style="width: 100%;"></div>
+              <div class="hud-hp-row">
+                <span class="hud-hp-lbl">HP:</span>
+                <div class="hud-hp-track">
+                  <div class="hud-hp-fill" style="width: 100%;"></div>
                 </div>
               </div>
-              <!-- 파티 능력치 요약 -->
-              <div class="party-game-stats mono text-muted" style="font-size: 11px; display: flex; justify-content: center; gap: 12px; margin-top: 8px;">
-                <span>프론트: <span id="game-stat-front" class="gold-color">0</span></span>
-                <span>백엔드: <span id="game-stat-back" class="mana-color">0</span></span>
-                <span>클라우드: <span id="game-stat-cloud" class="xp-color">0</span></span>
-                <span>인프라: <span id="game-stat-infra" class="health-color">0</span></span>
-              </div>
+              <div class="hud-hp-numeric">100 / 100</div>
+              <div class="hud-border-bottom"></div>
             </div>
-          </div>
-
-          <!-- 전투 로그 -->
-          <div class="battle-log-panel" style="margin-top: 16px;">
-            <h4 class="card-title" style="font-size: 12px; border-bottom: 1px solid var(--color-hairline); padding-bottom: 6px; margin-bottom: 8px;">전투 일지 (Battle Log)</h4>
-            <div class="battle-log-content" id="battle-log" style="height: 100px; overflow-y: auto;">
-              <p class="log-entry text-muted">[시스템] 원정대를 편성한 뒤 '퀴즈 레이드 시작' 버튼을 누르면 모험이 시작됩니다.</p>
-            </div>
-          </div>
-
-          <!-- 퀴즈 영역 (전투 시작 후 노출) -->
-          <div id="quiz-area" class="quiz-panel-box hidden" style="margin-top: 20px; border-top: 1px solid var(--color-hairline); padding-top: 20px;">
-            <div class="quiz-status-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <span id="quiz-progress-text" class="mono font-bold gold-color" style="font-size: 12px;">QUESTION: Q1 / 10</span>
-              <span id="quiz-score-text" class="mono font-bold xp-color" style="font-size: 12px;">SCORE: 0점</span>
-            </div>
-            <!-- 질문 박스 -->
-            <div id="quiz-question-box" class="quiz-question-card" style="margin-bottom: 16px; background-color: var(--color-surface-2); padding: 16px; border: 1px solid var(--color-hairline-strong); border-radius: var(--rounded-md); text-align: left;">
-              <p id="quiz-question-text" class="body-sm" style="font-size: 14px; font-weight: bold; line-height: 1.6; color: var(--color-ink); margin: 0;"></p>
-            </div>
-            <!-- 선택지 레이아웃 -->
-            <div id="quiz-choices-grid" class="quiz-choices-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-              <button class="quiz-choice-btn" data-index="0">보기 1</button>
-              <button class="quiz-choice-btn" data-index="1">보기 2</button>
-              <button class="quiz-choice-btn" data-index="2">보기 3</button>
-              <button class="quiz-choice-btn" data-index="3">보기 4</button>
-            </div>
-            <!-- 해설 상자 -->
-            <div id="quiz-explanation-box" class="quiz-explanation-box hidden" style="background-color: var(--color-surface-3); padding: 12px 16px; border: 1px solid var(--color-hairline-strong); border-radius: var(--rounded-md); text-align: left;">
-              <div class="explanation-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed var(--color-hairline-strong); padding-bottom: 6px;">
-                <span id="quiz-result-title" class="font-bold" style="font-size: 13px;">[정답/오답]</span>
-                <button id="btn-quiz-next" class="button-primary-border" style="font-size: 11px; padding: 4px 12px;">다음 문제로 ➡️</button>
-              </div>
-              <p id="quiz-explanation-text" class="body-sm" style="font-size: 12px; color: var(--color-ink-muted); line-height: 1.6; margin: 0;"></p>
-            </div>
-          </div>
-
-          <!-- 행동 컨트롤러 -->
-          <div class="game-controls text-center" style="margin-top: 20px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-            <button id="btn-game-start" class="button-primary">⚔️ 퀴즈 레이드 시작 (Raid Start)</button>
-            <button id="btn-game-reset" class="button-secondary hidden">🔁 재도전 (Reset)</button>
-          </div>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- 하단 푸터 -->
-    <footer id="guild-footer">
-      <div class="footer-content">
-        <div class="footer-brand">
-          <div class="logo-text">THE CODING GUILD</div>
-          <p class="caption">Linear.app 디자인 스타일과 HTML5 필수 API를 활용하여 제작된 웹페이지입니다.</p>
-        </div>
-        <div class="footer-meta">
-          <span class="caption">© 2026 Team 2. All rights secured.</span>
-          <span class="caption">발표 대기 퀘스트: 2026년 6월 1일</span>
-        </div>
-      </div>
-    </footer>
-
-  </div>
-
-  <!-- 조원 상세 정보 캐릭터 시트 모달 (Roster 탭에서 작동) -->
-  <div id="character-sheet-modal" class="modal-backdrop">
-    <div class="modal-content character-sheet-layout">
-      <button id="btn-close-modal" class="modal-close-btn" aria-label="모달 닫기">&times;</button>
-      <div class="modal-header">
-        <span id="modal-char-class" class="eyebrow text-primary">GUILD MASTER</span>
-        <h3 id="modal-char-name" class="display-md">이유경</h3>
-        <span id="modal-char-level" class="badge-gold">Lv. 99</span>
-      </div>
-      
-      <div class="modal-body">
-        <div class="modal-profile-column">
-          <!-- CSS로 아바타 렌더링 -->
-          <div id="modal-char-avatar" class="avatar-large">
-            <span id="modal-avatar-initial">이</span>
+            
           </div>
           
-          <div class="modal-weapon-box" style="margin-top: 12px; padding: 8px 12px; background: var(--color-surface-2); border-left: 2px solid var(--color-gold); border-radius: 4px; width: 100%;">
-            <span class="caption text-muted" style="display: block; font-size: 11px; margin-bottom: 2px;">🛡️ 장착 무기 (Equipped Weapon)</span>
-            <span id="modal-char-weapon" class="mono font-bold gold-color" style="font-size: 13px;">Figma의 방패</span>
-          </div>
-
-          <div class="modal-hobby-box" style="padding: 8px 12px; background: var(--color-surface-2); border-left: 2px solid var(--color-primary-hover); border-radius: 4px; width: 100%;">
-            <span class="caption text-muted" style="display: block; font-size: 11px; margin-bottom: 2px;">🎨 취미 (Hobby)</span>
-            <span id="modal-char-hobby" class="mono font-bold" style="font-size: 13px; color: var(--color-ink);">Figma 템플릿 탐색</span>
-          </div>
-
-          <div class="modal-link-box" style="padding: 8px 12px; background: var(--color-surface-2); border-left: 2px solid var(--color-success); border-radius: 4px; width: 100%;">
-            <span class="caption text-muted" style="display: block; font-size: 11px; margin-bottom: 2px;">🔗 참고 주소 (Reference Link)</span>
-            <a id="modal-char-link" href="#" target="_blank" class="mono font-bold" style="font-size: 13px; color: var(--color-success); text-decoration: underline;">GitHub 바로가기</a>
-          </div>
-
-          <div class="modal-address-box" style="padding: 8px 12px; background: var(--color-surface-2); border-left: 2px solid var(--color-xp); border-radius: 4px; width: 100%;">
-            <span class="caption text-muted" style="display: block; font-size: 11px; margin-bottom: 2px;">📍 활동 주소 (Address)</span>
-            <span id="modal-char-address" class="mono font-bold" style="font-size: 13px; color: var(--color-xp);">서울 마포구 공덕동</span>
-          </div>
-
-          <div class="modal-lore-box" style="width: 100%;">
-            <span class="caption text-muted">길드 연대기 (Biography)</span>
-            <p id="modal-char-bio" class="body-sm">
-              길드의 비전 제시자이자 전방의 리더. 퀘스트 일정을 엄호하고 스펙 폭주로부터 아군을 방어한다.
-            </p>
+          <!-- 포켓몬 골드 오리지널 하단 텍스트 및 커맨드 박스 -->
+          <div class="battle-dialogue-container">
+            <!-- 대화 메시지 텍스트 구역 -->
+            <div class="battle-msg" id="battle-message">
+              야생의 개발자가 승부를 걸어왔다!
+            </div>
+            
+            <!-- 퀴즈 팝업 오버레이 박스 -->
+            <div class="quiz-overlay-box hidden" id="battle-quiz-box">
+              <div class="quiz-q" id="quiz-question-text">Q. 질문 내용이 여기에 들어갑니다.</div>
+              <div class="quiz-opts" id="quiz-options-list">
+                <!-- 퀴즈 버튼 -->
+              </div>
+            </div>
+            
+            <!-- 2x2 커맨드 버튼 구역 (오리지널 포켓몬 골드 스타일 박스 오버랩) -->
+            <div class="battle-actions-box" id="battle-main-controls">
+              <div class="battle-actions-grid">
+                <button class="battle-opt-btn" id="btn-fight">싸운다</button>
+                <button class="battle-opt-btn" id="btn-hint">힌트</button>
+                <button class="battle-opt-btn" id="btn-battle-dex">도감</button>
+                <button class="battle-opt-btn" id="btn-run">도망</button>
+              </div>
+            </div>
           </div>
         </div>
         
-        <div class="modal-stats-column">
-          <h4 class="card-title">스킬 및 능력치</h4>
-          
-          <div class="modal-skills-list">
-            <div class="skill-item">
-              <span class="skill-name">Commanding Voice</span>
-              <span class="skill-desc">아군을 소집하고 단합력을 극대화하여 마감 일정을 준수하게 한다.</span>
-            </div>
-            <div class="skill-item">
-              <span class="skill-name">Project Shield</span>
-              <span class="skill-desc">외부 스펙 변경이나 위험 요소로부터 길드의 안정을 유지한다.</span>
-            </div>
-          </div>
-
-          <h4 class="card-title" style="margin-top: 8px; margin-bottom: 2px;">기술 스택 장비 (Equipped Runes)</h4>
-          <p class="body-sm text-muted" style="font-size: 11px; margin-bottom: 4px;">장착할 룬(기술 스택)을 탭하여 능력치를 강화하세요. (실시간 스탯 반영)</p>
-          <div id="modal-tech-inventory" class="tech-inventory-grid">
-            <!-- JS로 로드되는 동적 스택 룬 -->
-          </div>
-          
-          <div class="modal-stats-bars">
-            <div class="stat-row">
-              <span class="body-sm">프론트엔드 (Frontend)</span>
-              <div class="stat-bar-container">
-                <div id="modal-bar-lead" class="stat-bar-fill bg-gold" style="width: 95%;"></div>
+        <!-- 7) 🏆 엔딩 축하 패널 (전원 포획 완료 시) -->
+        <div class="screen-panel hidden" id="panel-ending">
+          <div class="ending-universe">
+            <div class="ending-star-bg" id="ending-star-bg"></div>
+            <div class="ending-content">
+              <div class="ending-trophy-row">
+                <div class="ending-trophy-icon">🏆</div>
+                <h2 class="ending-title">전설의 개발자 트레이너!</h2>
               </div>
-              <span id="modal-val-lead" class="mono font-bold">95</span>
-            </div>
-            <div class="stat-row">
-              <span class="body-sm">백엔드 (Backend)</span>
-              <div class="stat-bar-container">
-                <div id="modal-bar-strat" class="stat-bar-fill bg-mana" style="width: 90%;"></div>
+              <p class="ending-subtitle">4명의 개발자몬 도감을 모두 완성했습니다!</p>
+              <div class="ending-dev-showcase" id="ending-dev-showcase">
+                <!-- 4 developer cards will be injected here by JS -->
               </div>
-              <span id="modal-val-strat" class="mono font-bold">90</span>
-            </div>
-            <div class="stat-row">
-              <span class="body-sm">클라우드 (Cloud)</span>
-              <div class="stat-bar-container">
-                <div id="modal-bar-code" class="stat-bar-fill bg-xp" style="width: 85%;"></div>
+              <p class="ending-msg">당신은 진정한 풀스택 포켓몬 마스터입니다! 🌟</p>
+              <div class="ending-actions">
+                <button class="ending-btn-main" id="btn-ending-dex">📕 도감 보기</button>
+                <button class="ending-btn-sub" id="btn-ending-world">🗺️ 월드로 돌아가기</button>
               </div>
-              <span id="modal-val-code" class="mono font-bold">85</span>
-            </div>
-            <div class="stat-row">
-              <span class="body-sm">인프라 (Infrastructure)</span>
-              <div class="stat-bar-container">
-                <div id="modal-bar-stab" class="stat-bar-fill bg-health" style="width: 88%;"></div>
-              </div>
-              <span id="modal-val-stab" class="mono font-bold">88</span>
             </div>
           </div>
         </div>
+        
+        <!-- 5) 포켓몬 스타일 인게임 메뉴 오버레이 (START 키) -->
+        <div class="menu-overlay hidden" id="ingame-menu">
+          <div class="classic-menu-box">
+            <div class="menu-title">메 뉴</div>
+            <ul class="menu-list">
+              <li class="menu-item active-item" id="menu-opt-pokedex">📕 도감 보기</li>
+              <li class="menu-item" id="menu-opt-save">💾 리포트 작성</li>
+              <li class="menu-item" id="menu-opt-mute">🎵 소리 켜기</li>
+              <li class="menu-item" id="menu-opt-close">❌ 메뉴 닫기</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 6) 도감 전체화면 오버레이 -->
+        <div class="pokedex-fullscreen hidden" id="pokedex-overlay">
+          <div class="dex-window">
+            
+            <!-- 도감 탑 네비게이션 -->
+            <div class="dex-nav">
+              <h2>📕 개발자 도감</h2>
+              <button class="dex-close-btn" id="btn-close-dex">닫기 (B)</button>
+            </div>
+            
+            <div class="dex-workspace">
+              <!-- 좌측: 도감 스크롤 리스트 -->
+              <div class="dex-sidebar">
+                <h3>포획 리스트 (<span id="captured-count">0</span>/4)</h3>
+                <ul class="dex-ul-list" id="dex-list-ul">
+                  <li class="dex-li-item locked" data-id="dev_frontend">No.001 ??? (프론트)</li>
+                  <li class="dex-li-item locked" data-id="dev_backend">No.002 ??? (백엔드)</li>
+                  <li class="dex-li-item locked" data-id="dev_fullstack">No.003 ??? (풀스택)</li>
+                  <li class="dex-li-item locked" data-id="dev_data">No.004 ??? (데이터)</li>
+                </ul>
+                <div class="reset-area">
+                  <button id="btn-reset-save" class="retro-btn-reset">모험 리셋</button>
+                </div>
+              </div>
+              
+              <!-- 우측: 선택된 개발자 상세 / 장착 워크스페이스 -->
+              <div class="dex-content locked-detail" id="dex-detail-area">
+                <div class="empty-state" id="dex-detail-placeholder-msg">
+                  <p>잡은 개발자를 좌측 리스트에서 선택해 주세요!</p>
+                </div>
+                
+                <div class="detail-workspace-grid hidden" id="dex-detail-content-view">
+                  <!-- 상부 타이틀 -->
+                  <div class="work-header">
+                    <span class="work-no" id="detail-no-text">No.001</span>
+                    <h2 class="work-name" id="detail-name-text">김코드</h2>
+                    <span class="work-badge" id="detail-type-badge">프론트엔드</span>
+                  </div>
+                  
+                  <!-- 드롭존 & 인벤토리 그리드 -->
+                  <div class="personal-page-card">
+                    <div class="personal-avatar" id="personal-avatar">💻</div>
+                    <div class="personal-main">
+                      <div class="personal-kicker">PERSONAL PAGE</div>
+                      <h3 id="personal-title-text">프론트엔드 포트폴리오</h3>
+                      <p id="personal-headline-text">사용자 경험을 코드로 설계하는 개발자입니다.</p>
+                      <div class="personal-meta-row">
+                        <span id="personal-location-text">Developer Town</span>
+                        <span id="personal-contact-text">contact@example.dev</span>
+                      </div>
+                      <div class="personal-chip-row" id="personal-stack-list"></div>
+                      <div class="personal-link-row" id="personal-link-list"></div>
+                    </div>
+                  </div>
+
+                  <div class="team-intro-card" id="team-intro-card">
+                    <div class="team-intro-copy">
+                      <div class="team-kicker">TEAM PROFILE</div>
+                      <h3 id="team-title-text">우리 조 개발자 도감</h3>
+                      <p id="team-subtitle-text">김영만, 이유경, 이주영, 김준하가 함께 만든 레트로 개발자 모험팀입니다.</p>
+                      <span id="team-motto-text">각자 다른 스탯을 합쳐 하나의 플레이 경험을 완성합니다.</span>
+                    </div>
+                    <div class="team-member-grid" id="team-member-list"></div>
+                  </div>
+                  
+                  <div class="work-drag-grid">
+                    
+                    <!-- 옷 입히기 구역 -->
+                    <div class="drop-zone-box">
+                      <div class="box-title">👕 장비 장착 (아이템 드롭)</div>
+                      <div class="char-dropzone" id="character-drop-zone">
+                        <div class="char-layers" id="equipped-visuals-container"></div>
+                        <div class="char-base-display" id="character-base-emoji">💻</div>
+                      </div>
+                      <div class="equip-txt" id="equipped-items-list-text">장착 장비: 없음</div>
+                    </div>
+                    
+                    <!-- 아이템 리스트 -->
+                    <div class="drag-items-box">
+                      <div class="box-title">🛠️ 장비 보관함 (드래그)</div>
+                      <div class="drag-item-list" id="items-drag-box">
+                        <div class="drag-item-node" draggable="true" data-item-id="macbook">
+                          <span class="drag-node-ico">💻</span>
+                          <div class="drag-node-details">
+                            <div class="node-name">맥북 프로</div>
+                            <div class="node-boost">코딩+15 스피드+10</div>
+                          </div>
+                        </div>
+                        <div class="drag-item-node" draggable="true" data-item-id="headphones">
+                          <span class="drag-node-ico">🎧</span>
+                          <div class="drag-node-details">
+                            <div class="node-name">헤드폰</div>
+                            <div class="node-boost">디버깅+20</div>
+                          </div>
+                        </div>
+                        <div class="drag-item-node" draggable="true" data-item-id="glasses">
+                          <span class="drag-node-ico">👓</span>
+                          <div class="drag-node-details">
+                            <div class="node-name">보안경</div>
+                            <div class="node-boost">디자인+15 디버깅+5</div>
+                          </div>
+                        </div>
+                        <div class="drag-item-node" draggable="true" data-item-id="coffee">
+                          <span class="drag-node-ico">☕</span>
+                          <div class="drag-node-details">
+                            <div class="node-name">아메리카노</div>
+                            <div class="node-boost">스피드+15 코딩+5</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="custom-item-maker">
+                        <div class="box-title">직접 그린 아이템 만들기</div>
+                        <div class="item-maker-layout">
+                          <canvas id="item-draw-canvas" width="160" height="160" aria-label="아이템 그리기 캔버스"></canvas>
+                          <div class="item-maker-tools">
+                            <input id="custom-item-name" type="text" maxlength="14" placeholder="아이템 이름">
+                            <div class="item-color-palette" id="item-color-palette" aria-label="색상 선택"></div>
+                            <div class="item-maker-row">
+                              <select id="custom-item-stat" aria-label="상승 스탯">
+                                <option value="coding">코딩</option>
+                                <option value="debugging">디버깅</option>
+                                <option value="design">디자인</option>
+                                <option value="speed">스피드</option>
+                              </select>
+                              <select id="custom-item-boost" aria-label="상승 수치">
+                                <option value="5">+5</option>
+                                <option value="10" selected>+10</option>
+                                <option value="15">+15</option>
+                              </select>
+                            </div>
+                            <div class="item-maker-actions">
+                              <button type="button" id="btn-clear-item-canvas">지우기</button>
+                              <button type="button" id="btn-create-custom-item">추가</button>
+                            </div>
+                          </div>
+                        </div>
+                        <p class="item-maker-help">그린 아이템은 보관함에 저장되고, 클릭하거나 드래그해서 착용/미착용할 수 있습니다.</p>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  
+                  <!-- 능력치 스탯 -->
+                  <div class="work-stats-box">
+                    <div class="box-title">📊 개발 스탯</div>
+                    <div class="work-stat-rows">
+                      <div class="w-stat">
+                        <span class="w-lbl">코딩력</span>
+                        <div class="w-bar-outer"><div class="w-bar-inner stat-coding" id="stat-bar-coding"></div></div>
+                        <span class="w-val" id="stat-val-coding">85</span>
+                      </div>
+                      <div class="w-stat">
+                        <span class="w-lbl">디버깅</span>
+                        <div class="w-bar-outer"><div class="w-bar-inner stat-debugging" id="stat-bar-debugging"></div></div>
+                        <span class="w-val" id="stat-val-debugging">75</span>
+                      </div>
+                      <div class="w-stat">
+                        <span class="w-lbl">디자인</span>
+                        <div class="w-bar-outer"><div class="w-bar-inner stat-design" id="stat-bar-design"></div></div>
+                        <span class="w-val" id="stat-val-design">90</span>
+                      </div>
+                      <div class="w-stat">
+                        <span class="w-lbl">스피드</span>
+                        <div class="w-bar-outer"><div class="w-bar-inner stat-speed" id="stat-bar-speed"></div></div>
+                        <span class="w-val" id="stat-val-speed">80</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- 포트폴리오 설명 및 동영상 -->
+                  <div class="work-portfolio-box">
+                    <div class="box-title">📝 소개 및 개발 프로젝트</div>
+                    <p class="work-bio" id="detail-bio-text"></p>
+                    <div class="work-projects" id="detail-projects-container">
+                      <!-- 동적 렌더링 -->
+                    </div>
+                    
+                    <div class="work-video-area hidden" id="project-video-area">
+                      <div class="box-title">🎬 프로젝트 시연 비디오</div>
+                      <video id="project-video" controls class="work-video" playsinline>
+                        <source src="" type="video/mp4">
+                      </video>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
       </div>
     </div>
+    
+    <!-- 모바일 및 터치 유저용 가상 방향 패드 -->
+    <div class="floating-controls">
+      <div class="arrow-key-pad">
+        <button class="pad-drag-handle" type="button" data-controller-drag="arrow" aria-label="방향 패드 이동" title="드래그해서 이동">↕</button>
+        <button class="arrow-k up" id="touch-up">▲</button>
+        <button class="arrow-k left" id="touch-left">◀</button>
+        <button class="arrow-k right" id="touch-right">▶</button>
+        <button class="arrow-k down" id="touch-down">▼</button>
+      </div>
+      <div class="button-pad">
+        <button class="pad-drag-handle" type="button" data-controller-drag="buttons" aria-label="버튼 패드 이동" title="드래그해서 이동">↕</button>
+        <button class="pad-b-btn" id="touch-b">B</button>
+        <button class="pad-a-btn" id="touch-a">A</button>
+        <button class="pad-sound-btn sound-off" id="touch-sound" type="button" aria-pressed="false">소리 OFF</button>
+        <button class="pad-volume-toggle" id="touch-volume-toggle" type="button" aria-label="음량 조절" aria-expanded="false">🔊</button>
+        <label class="pad-volume-control" for="touch-volume">
+          <span class="pad-volume-label">음량</span>
+          <input id="touch-volume" class="pad-volume-slider" type="range" min="0" max="100" step="5" value="80" aria-label="음량">
+          <span class="pad-volume-value" id="touch-volume-value">80%</span>
+        </label>
+        <button class="pad-menu-btn" id="touch-start">메뉴</button>
+      </div>
+    </div>
+    
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script src="data.js?v=20260528-team-dex"></script>
+  <script src="audio.js?v=20260528-monitor-sprites"></script>
+  <script src="engine.js?v=20260528-battle-pokemon"></script>
+  <script src="dragdrop.js"></script>
+  <script src="app.js?v=20260528-team-dex"></script>
 </body>
 </html>
