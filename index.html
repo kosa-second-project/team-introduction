@@ -3,7 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEVELOPERS GOLD - 4조 개발자 도감</title>
+  <title>DEVELOPERS GOLD - 2조 개발자 도감</title>
+  
+  <!-- 실시간 스크립트 에러 화면 표시 디버거 -->
+  <script>
+    window.addEventListener('error', function(e) {
+      var div = document.createElement('div');
+      div.id = 'js-debug-error-overlay';
+      div.style.position = 'fixed';
+      div.style.top = '0';
+      div.style.left = '0';
+      div.style.width = '100%';
+      div.style.background = '#e74c3c';
+      div.style.color = '#fff';
+      div.style.zIndex = '999999';
+      div.style.padding = '15px';
+      div.style.fontFamily = 'monospace';
+      div.style.fontSize = '14px';
+      div.style.lineHeight = '1.5';
+      div.style.whiteSpace = 'pre-wrap';
+      div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+      div.textContent = '❌ 스크립트 에러 감지: ' + e.message + '\n파일: ' + e.filename + ' (줄: ' + e.lineno + ', 열: ' + e.colno + ')\n' + (e.error ? e.error.stack : '');
+      document.body.appendChild(div);
+    });
+  </script>
   
   <!-- 레트로 구글 폰트 및 눈누 둥근모꼴 한글 픽셀 폰트 로드 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +43,7 @@
     }
   </style>
   
-  <link rel="stylesheet" href="src/styles/main.css?v=20260529-structure">
+  <link rel="stylesheet" href="styles.css?v=20260529-lunch-map">
 </head>
 <body>
   
@@ -33,12 +56,12 @@
       <!-- 실제 실감형 플레이 스크린 -->
       <div class="monitor-screen" id="game-screen">
         
-        <!-- 1) 인트로/오프닝 패널 (CSS 동적 배경으로 교체) -->
+        <!-- 1) 인트로/오프닝 패널 -->
         <div class="screen-panel" id="panel-intro">
           <div class="intro-bg">
-            <!-- 별 파티클 레이어 (JS로 생성) -->
+            <!-- 별 파티클 레이어 -->
             <div class="intro-star-field" id="intro-star-field"></div>
-            <!-- 배경 픽셀 장식 몬스터 (CSS 레이어) -->
+            <!-- 배경 픽셀 장식 몬스터 -->
             <div class="intro-deco-layer" aria-hidden="true">
               <img class="intro-deco-mon mon-1" src="assets/battle/pikachu.png" alt="">
               <img class="intro-deco-mon mon-2" src="assets/battle/charmander.png" alt="">
@@ -56,7 +79,7 @@
                 <img class="intro-trainer-sprite" src="assets/map/player/front-1.png" alt="">
                 <img class="intro-wild-sprite" src="assets/battle/snorlax.png" alt="">
               </div>
-              <p class="intro-subtitle">HTML · CSS · JS로 구현한 포트폴리오 모험</p>
+              <p class="intro-subtitle">2조 스터디와 개인 포트폴리오를 담은 개발자 도감</p>
               <div class="start-prompt blink" id="start-prompt-btn">PRESS START</div>
               <div class="geolocation-info" id="geo-info">GPS 확인 중...</div>
             </div>
@@ -90,7 +113,7 @@
           <canvas id="world-canvas" width="768" height="432"></canvas>
           <div class="game-hud">
             <div class="hud-item">[Enter] 메뉴 열기</div>
-            <div class="hud-item hud-location">DEVELOPER TOWN · ROUTE CSS</div>
+            <div class="hud-item hud-location">DEVELOPER TOWN · ROUTE 02</div>
             <div class="hud-item" id="hud-trainer-name">지우</div>
           </div>
         </div>
@@ -193,7 +216,7 @@
               </div>
               <p class="ending-subtitle">4명의 개발자몬 도감을 모두 완성했습니다!</p>
               <div class="ending-dev-showcase" id="ending-dev-showcase">
-                <!-- 4 developer cards will be injected here by JS -->
+                <!-- 4 developer cards will be injected here -->
               </div>
               <p class="ending-msg">당신은 진정한 풀스택 포켓몬 마스터입니다! 🌟</p>
               <div class="ending-actions">
@@ -275,11 +298,25 @@
                   <div class="team-intro-card" id="team-intro-card">
                     <div class="team-intro-copy">
                       <div class="team-kicker">TEAM PROFILE</div>
-                      <h3 id="team-title-text">우리 조 개발자 도감</h3>
-                      <p id="team-subtitle-text">김영만, 이유경, 이주영, 김준하가 함께 만든 레트로 개발자 모험팀입니다.</p>
-                      <span id="team-motto-text">각자 다른 스탯을 합쳐 하나의 플레이 경험을 완성합니다.</span>
+                      <h3 id="team-title-text">2조 개발자 도감</h3>
+                      <p id="team-subtitle-text">김영만, 이유경, 이주영, 김준하가 함께 스터디를 이어가는 팀입니다.</p>
+                      <span id="team-motto-text">아키텍처 스터디 1주차를 마쳤고, 다음은 클라우드 스터디로 이어갑니다.</span>
                     </div>
                     <div class="team-member-grid" id="team-member-list"></div>
+                  </div>
+
+                  <div class="restaurant-map-card" id="restaurant-map-card">
+                    <div class="restaurant-map-copy">
+                      <div class="team-kicker">LUNCH MAP</div>
+                      <h3>경찰병원역 점심 픽</h3>
+                      <p>식권대장 후보로 넣어둔 2조의 밥집 리스트입니다.</p>
+                    </div>
+                    <div class="restaurant-map-layout">
+                      <div class="restaurant-map-view" id="restaurant-map-view">
+                        <div class="restaurant-map-fallback" id="restaurant-map-fallback">카카오맵 연결 전</div>
+                      </div>
+                      <div class="restaurant-list" id="restaurant-list"></div>
+                    </div>
                   </div>
                   
                   <div class="work-drag-grid">
@@ -297,7 +334,9 @@
                     <!-- 아이템 리스트 -->
                     <div class="drag-items-box">
                       <div class="box-title">🛠️ 장비 보관함 (드래그)</div>
-                      <div class="drag-item-list" id="items-drag-box"></div>
+                      <div class="drag-item-list" id="items-drag-box">
+                        <!-- 선택된 조원의 전용 아이템이 동적으로 렌더링됩니다. -->
+                      </div>
                       <div class="custom-item-maker">
                         <div class="box-title">직접 그린 아이템 만들기</div>
                         <div class="item-maker-layout">
@@ -359,14 +398,14 @@
                   
                   <!-- 포트폴리오 설명 및 동영상 -->
                   <div class="work-portfolio-box">
-                    <div class="box-title">📝 소개 및 개발 프로젝트</div>
+                    <div class="box-title">📝 소개 및 스터디 기록</div>
                     <p class="work-bio" id="detail-bio-text"></p>
                     <div class="work-projects" id="detail-projects-container">
                       <!-- 동적 렌더링 -->
                     </div>
                     
                     <div class="work-video-area hidden" id="project-video-area">
-                      <div class="box-title">🎬 프로젝트 시연 비디오</div>
+                      <div class="box-title">🎬 스터디 기록 영상</div>
                       <video id="project-video" controls class="work-video" playsinline>
                         <source src="" type="video/mp4">
                       </video>
@@ -409,6 +448,10 @@
     
   </div>
 
-  <script type="module" src="src/main.js?v=20260529-structure"></script>
+  <script src="data.js?v=20260529-lunch-map"></script>
+  <script src="audio.js?v=20260528-monitor-sprites"></script>
+  <script src="engine.js?v=20260528-battle-pokemon"></script>
+  <script src="dragdrop.js?v=20260529-lunch-map"></script>
+  <script src="app.js?v=20260529-lunch-map"></script>
 </body>
 </html>
