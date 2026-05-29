@@ -353,7 +353,7 @@ const DEVELOPER_PROFILES = {
     contact: "Team Member 01",
     stack: ["풀스택", "아키텍처", "클라우드 예정", "정리", "꾸준함"],
     links: [
-      { label: "개인 포트폴리오" },
+      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
       { label: "역할: 스터디 참여" },
       { label: "특징: 안정감" }
     ]
@@ -365,7 +365,7 @@ const DEVELOPER_PROFILES = {
     contact: "Team Member 02",
     stack: ["풀스택", "아키텍처", "클라우드 예정", "기록", "섬세함"],
     links: [
-      { label: "개인 포트폴리오" },
+      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
       { label: "역할: 스터디 참여" },
       { label: "특징: 꼼꼼함" }
     ]
@@ -377,7 +377,7 @@ const DEVELOPER_PROFILES = {
     contact: "Team Member 03",
     stack: ["풀스택", "아키텍처", "클라우드 예정", "실행력", "적응력"],
     links: [
-      { label: "개인 포트폴리오" },
+      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
       { label: "역할: 스터디 참여" },
       { label: "특징: 실행력" }
     ]
@@ -389,7 +389,7 @@ const DEVELOPER_PROFILES = {
     contact: "Team Member 04",
     stack: ["프론트엔드", "아키텍처", "클라우드 예정", "사용자 관점", "분석력"],
     links: [
-      { label: "개인 포트폴리오" },
+      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
       { label: "역할: 스터디 참여" },
       { label: "특징: 관찰력" }
     ]
