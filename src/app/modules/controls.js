@@ -13,7 +13,13 @@ Object.assign(window.App.prototype, {
 
     // 배틀 기본 조작 단추
     document.getElementById("btn-fight").addEventListener("click", () => this.showQuizInterface());
-    document.getElementById("btn-hint").addEventListener("click", () => this.showQuizHint());
+    const hintButton = document.getElementById("btn-hint");
+    hintButton.disabled = true;
+    hintButton.setAttribute("aria-disabled", "true");
+    hintButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    });
     document.getElementById("btn-battle-dex").addEventListener("click", () => this.openPokedexOverlay());
     document.getElementById("btn-run").addEventListener("click", () => this.runFromBattle());
     this.bindPokeballThrowEvents();

@@ -70,6 +70,8 @@ class App {
     this.restaurantMap = null;
     this.restaurantMarkers = [];
     this.restaurantInfoWindows = [];
+    this.restaurantUserMarker = null;
+    this.restaurantUserInfoWindow = null;
   }
 
   init() {
@@ -575,7 +577,13 @@ class App {
 
     // 배틀 기본 조작 단추
     document.getElementById("btn-fight").addEventListener("click", () => this.showQuizInterface());
-    document.getElementById("btn-hint").addEventListener("click", () => this.showQuizHint());
+    const hintButton = document.getElementById("btn-hint");
+    hintButton.disabled = true;
+    hintButton.setAttribute("aria-disabled", "true");
+    hintButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    });
     document.getElementById("btn-battle-dex").addEventListener("click", () => this.openPokedexOverlay());
     document.getElementById("btn-run").addEventListener("click", () => this.runFromBattle());
     this.bindPokeballThrowEvents();
@@ -764,7 +772,7 @@ class App {
 
     this.dialogueQueue = [
       "오박사: 앗! 안녕하신가! 여기는 2조 개발자몬 월드라네!",
-      "오박사: 우리 2조에는 영만, 유경, 주영, 준하 네 명의 개발자몬이 함께하고 있지.",
+      "오박사: 우리 2조에는 영만, 준하, 유경, 주영 네 명의 개발자몬이 함께하고 있지.",
       "오박사: 자네는 이제 막 도감을 들고 모험을 시작한 신예 트레이너로군!",
       "오박사: 풀숲을 돌아다니다 보면 2조 개발자몬들이 하나씩 등장할 걸세.",
       "오박사: 개발자몬을 만나면 [싸운다]를 눌러 퀴즈에 도전하게. 정답을 맞히면 몬스터볼을 던질 수 있지!",
@@ -2274,8 +2282,7 @@ class App {
     const dev = window.DEVELOPERS.find(d => d.id === devId);
     if (!dev) return;
 
-    const noMap = { dev_frontend: "No.001", dev_backend: "No.002", dev_fullstack: "No.003", dev_data: "No.004" };
-    document.getElementById("detail-no-text").textContent = noMap[devId];
+    document.getElementById("detail-no-text").textContent = this.getDeveloperNo(devId);
     document.getElementById("detail-name-text").textContent = dev.name;
     document.getElementById("detail-type-badge").textContent = dev.type;
     document.getElementById("detail-bio-text").textContent = dev.description;
@@ -2432,10 +2439,15 @@ class App {
     const list = document.getElementById("restaurant-list");
     const fallback = document.getElementById("restaurant-map-fallback");
     const locationStatus = document.getElementById("restaurant-location-status");
+    const locationButton = document.getElementById("restaurant-location-btn");
     if (!list || !fallback) return;
 
     if (locationStatus) {
       locationStatus.textContent = "현재 위치 확인 전";
+    }
+    if (locationButton) {
+      locationButton.disabled = true;
+      locationButton.onclick = () => this.renderUserLocationOnRestaurantMap(null, true);
     }
 
     list.innerHTML = "";
@@ -2483,6 +2495,9 @@ class App {
       fallback.textContent = "카카오맵 연결 전";
       if (locationStatus) {
         locationStatus.textContent = "카카오맵 연결 후 현재 위치를 표시합니다.";
+      }
+      if (locationButton) {
+        locationButton.disabled = true;
       }
       return;
     }
@@ -2555,6 +2570,7 @@ class App {
     if (locationStatus) {
       locationStatus.textContent = "현재 위치 확인 중";
     }
+    const locationButton = document.getElementById("restaurant-location-btn");
 
     const center = new kakao.maps.LatLng(37.495918, 127.12454);
     this.restaurantMap = new kakao.maps.Map(mapContainer, {
@@ -2602,36 +2618,9 @@ class App {
       }
     });
 
-    const userLocation = await this.getUserMapLocation();
-    if (userLocation) {
-      const userPosition = new kakao.maps.LatLng(userLocation.lat, userLocation.lng);
-      const userMarker = new kakao.maps.Marker({
-        map: this.restaurantMap,
-        position: userPosition,
-        title: "현재 위치"
-      });
-      const userInfoWindow = new kakao.maps.InfoWindow({
-        content: `
-          <div class="kakao-restaurant-info">
-            <strong>현재 위치</strong>
-            <span>위도 ${this.escapeHtml(userLocation.lat.toFixed(5))} · 경도 ${this.escapeHtml(userLocation.lng.toFixed(5))}</span>
-          </div>
-        `
-      });
-
-      kakao.maps.event.addListener(userMarker, "click", () => {
-        this.restaurantInfoWindows.forEach(windowItem => windowItem.close());
-        userInfoWindow.open(this.restaurantMap, userMarker);
-      });
-
-      this.restaurantMarkers.push(userMarker);
-      this.restaurantInfoWindows.push(userInfoWindow);
-      bounds.extend(userPosition);
-      if (locationStatus) {
-        locationStatus.textContent = "현재 위치 표시 완료";
-      }
-    } else if (locationStatus) {
-      locationStatus.textContent = "현재 위치 권한이 없거나 사용할 수 없습니다.";
+    await this.renderUserLocationOnRestaurantMap(bounds, false);
+    if (locationButton) {
+      locationButton.disabled = false;
     }
 
     if (restaurants.length > 1) {
@@ -2662,34 +2651,123 @@ class App {
     });
   }
 
+  async renderUserLocationOnRestaurantMap(bounds = null, shouldOpen = false) {
+    const locationStatus = document.getElementById("restaurant-location-status");
+    if (!this.restaurantMap || !window.kakao?.maps) {
+      if (locationStatus) {
+        locationStatus.textContent = "카카오맵 연결 후 현재 위치를 표시합니다.";
+      }
+      return null;
+    }
+
+    if (locationStatus) {
+      locationStatus.textContent = "현재 위치 권한 요청 중";
+    }
+
+    const userLocation = await this.getUserMapLocation();
+    if (!userLocation) {
+      if (locationStatus) {
+        locationStatus.textContent = "현재 위치 권한이 없거나 사용할 수 없습니다.";
+      }
+      return null;
+    }
+
+    if (this.restaurantUserInfoWindow) {
+      this.restaurantUserInfoWindow.close();
+    }
+    if (this.restaurantUserMarker) {
+      this.restaurantUserMarker.setMap(null);
+    }
+
+    const userPosition = new kakao.maps.LatLng(userLocation.lat, userLocation.lng);
+    const userMarker = new kakao.maps.Marker({
+      map: this.restaurantMap,
+      position: userPosition,
+      title: "현재 위치"
+    });
+    const userInfoWindow = new kakao.maps.InfoWindow({
+      content: `
+        <div class="kakao-restaurant-info">
+          <strong>현재 위치</strong>
+          <span>위도 ${this.escapeHtml(userLocation.lat.toFixed(5))} · 경도 ${this.escapeHtml(userLocation.lng.toFixed(5))}</span>
+        </div>
+      `
+    });
+
+    kakao.maps.event.addListener(userMarker, "click", () => {
+      this.restaurantInfoWindows.forEach(windowItem => windowItem.close());
+      userInfoWindow.open(this.restaurantMap, userMarker);
+    });
+
+    this.restaurantUserMarker = userMarker;
+    this.restaurantUserInfoWindow = userInfoWindow;
+    this.restaurantMarkers.push(userMarker);
+    this.restaurantInfoWindows.push(userInfoWindow);
+
+    if (bounds) {
+      bounds.extend(userPosition);
+    } else {
+      this.restaurantMap.panTo(userPosition);
+    }
+    if (shouldOpen) {
+      this.restaurantInfoWindows.forEach(windowItem => windowItem.close());
+      userInfoWindow.open(this.restaurantMap, userMarker);
+    }
+    if (locationStatus) {
+      locationStatus.textContent = "현재 위치 표시 완료";
+    }
+
+    return userLocation;
+  }
+
   findRestaurantPlace(places, geocoder, restaurant, center) {
+    const queries = [restaurant.query, ...(restaurant.queryCandidates || [])].filter(Boolean);
     return new Promise(resolve => {
-      places.keywordSearch(
-        restaurant.query,
-        (result, status) => {
-          const place = status === kakao.maps.services.Status.OK && result.length > 0
-            ? this.selectBestRestaurantPlace(result, restaurant)
-            : null;
-
-          if (place || !restaurant.address || !geocoder?.addressSearch) {
-            resolve({ restaurant, place });
-            return;
-          }
-
-          geocoder.addressSearch(restaurant.address, (addressResult, addressStatus) => {
-            const coords = addressStatus === kakao.maps.services.Status.OK && addressResult.length > 0
-              ? { lat: Number(addressResult[0].y), lng: Number(addressResult[0].x) }
-              : null;
-            resolve({ restaurant: { ...restaurant, coords }, place });
-          });
-        },
-        {
-          location: center,
-          radius: 2600,
-          size: 5,
-          sort: kakao.maps.services.SortBy.DISTANCE
+      const resolveByAddress = () => {
+        if (!restaurant.address || !geocoder?.addressSearch) {
+          resolve({ restaurant, place: null });
+          return;
         }
-      );
+
+        geocoder.addressSearch(restaurant.address, (addressResult, addressStatus) => {
+          const coords = addressStatus === kakao.maps.services.Status.OK && addressResult.length > 0
+            ? { lat: Number(addressResult[0].y), lng: Number(addressResult[0].x) }
+            : null;
+          resolve({ restaurant: { ...restaurant, coords }, place: null });
+        });
+      };
+
+      const searchNext = (index = 0) => {
+        const query = queries[index];
+        if (!query) {
+          resolveByAddress();
+          return;
+        }
+
+        places.keywordSearch(
+          query,
+          (result, status) => {
+            const place = status === kakao.maps.services.Status.OK && result.length > 0
+              ? this.selectBestRestaurantPlace(result, restaurant)
+              : null;
+
+            if (place) {
+              resolve({ restaurant, place });
+              return;
+            }
+
+            searchNext(index + 1);
+          },
+          {
+            location: center,
+            radius: 3200,
+            size: 5,
+            sort: kakao.maps.services.SortBy.DISTANCE
+          }
+        );
+      };
+
+      searchNext();
     });
   }
 
@@ -2708,6 +2786,8 @@ class App {
     this.restaurantMarkers.forEach(marker => marker.setMap(null));
     this.restaurantInfoWindows = [];
     this.restaurantMarkers = [];
+    this.restaurantUserMarker = null;
+    this.restaurantUserInfoWindow = null;
   }
 
   getRestaurantSearchUrl(restaurant) {
@@ -2721,6 +2801,11 @@ class App {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  }
+
+  getDeveloperNo(devId) {
+    const index = window.DEVELOPERS.findIndex(dev => dev.id === devId);
+    return `No.${String(index + 1).padStart(3, "0")}`;
   }
 
   renderPersonalProfile(dev) {

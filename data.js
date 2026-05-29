@@ -300,7 +300,7 @@ const QUIZZES = [
 
 const TEAM_PROFILE = {
   title: "2조 개발자 도감",
-  subtitle: "김영만, 이유경, 이주영, 김준하가 함께 만든 레트로 개발자몬 모험팀입니다.",
+  subtitle: "김영만, 김준하, 이유경, 이주영이 함께 만든 레트로 개발자몬 모험팀입니다.",
   motto: "퀴즈를 풀고 개발자몬을 영입하며 2조의 성향, 취미, 취향, 스터디 기록을 하나씩 모아갑니다.",
   members: [
     { id: "dev_frontend", name: "김영만", role: "풀스택", trait: "흐름을 차분하게 잡아주는 안정형 개발자몬" },
@@ -318,6 +318,7 @@ const DEVELOPER_PROFILES = {
     contact: "좋아하는 식당: 뚱가의정부부대찌개 가락점",
     stack: ["풀스택", "스터디 정리", "아키텍처", "클라우드", "복만이"],
     links: [
+      { label: "GitHub Pages", url: "https://sksn12.github.io/" },
       { label: "역할: 흐름 정리" },
       { label: "퀴즈 키워드: 복만이" },
       { label: "점심 픽: 부대찌개" }
@@ -330,6 +331,7 @@ const DEVELOPER_PROFILES = {
     contact: "좋아하는 식당: K밥상",
     stack: ["풀스택", "콘텐츠", "UX Writing", "기록", "클라이밍"],
     links: [
+      { label: "GitHub Pages", url: "https://nunomi0.github.io/" },
       { label: "역할: 소개 구성" },
       { label: "퀴즈 키워드: 클라이밍" },
       { label: "점심 픽: 한식" }
@@ -339,12 +341,13 @@ const DEVELOPER_PROFILES = {
     title: "이주영의 개발자 카드",
     headline: "필요한 기능을 계획적으로 연결하고 플레이 가능한 흐름으로 완성합니다.",
     location: "2조 / Interaction Lab",
-    contact: "좋아하는 식당: 불의여우",
+    contact: "좋아하는 식당: 샤브로21 가락시장",
     stack: ["풀스택", "JavaScript", "상태 관리", "인터랙션", "ISTJ"],
     links: [
+      { label: "GitHub Pages", url: "https://0-x-14.github.io/" },
       { label: "역할: 기능 연결" },
       { label: "퀴즈 키워드: ISTJ" },
-      { label: "점심 픽: 일식" }
+      { label: "점심 픽: 샤브샤브" }
     ]
   },
   dev_data: {
@@ -354,6 +357,7 @@ const DEVELOPER_PROFILES = {
     contact: "좋아하는 식당: 함경도찹쌀순대",
     stack: ["프론트엔드", "UI 점검", "디버깅", "사용자 흐름", "6월생"],
     links: [
+      { label: "GitHub Pages", url: "https://kimjunha1231.github.io/" },
       { label: "역할: 화면 검증" },
       { label: "퀴즈 키워드: 6월" },
       { label: "점심 픽: 순댓국" }
@@ -369,7 +373,13 @@ const FAVORITE_RESTAURANTS = [
     memberId: "dev_frontend",
     memberName: "김영만",
     placeName: "뚱가의정부부대찌개 가락점",
-    query: "뚱가의정부부대찌개 가락점 서울 송파구 양재대로62길 42",
+    query: "뚱가 의정부부대찌게 서울 송파구 양재대로62길 42",
+    queryCandidates: [
+      "뚱가 의정부부대찌게 가락동",
+      "뚱가의정부부대찌개 가락점",
+      "뚱가 의정부부대찌개 서울 송파구 양재대로62길 42",
+      "서울 송파구 양재대로62길 42 부대찌개"
+    ],
     address: "서울 송파구 양재대로62길 42",
     category: "부대찌개",
     reason: "든든하고 빠르게 에너지를 채우기 좋은 영만의 점심 픽입니다.",
@@ -392,13 +402,19 @@ const FAVORITE_RESTAURANTS = [
     id: "lunch_jooyoung",
     memberId: "dev_fullstack",
     memberName: "이주영",
-    placeName: "불의여우",
-    query: "불의여우 서울 송파구 양재대로62길 20",
-    address: "서울 송파구 양재대로62길 20 1층",
-    category: "일식",
-    reason: "집중해서 개발한 뒤 깔끔하게 먹기 좋은 주영의 식당 픽입니다.",
-    fallbackLat: 37.4969824,
-    fallbackLng: 127.1197239
+    placeName: "샤브로21 가락시장",
+    query: "샤브로21 가락시장 서울 송파구 송파대로28길 27",
+    queryCandidates: [
+      "샤브로21 가락시장점",
+      "샤브로 21 가락시장",
+      "샤브로21 서울 송파구 송파대로28길 27",
+      "서울 송파구 송파대로28길 27 102동 114호 샤브샤브"
+    ],
+    address: "서울 송파구 송파대로28길 27 102동 114호",
+    category: "샤브샤브",
+    reason: "따뜻한 국물로 집중력을 다시 채우기 좋은 주영의 샤브샤브 픽입니다.",
+    fallbackLat: 37.4950793,
+    fallbackLng: 127.1206578
   },
   {
     id: "lunch_junha",
@@ -413,6 +429,11 @@ const FAVORITE_RESTAURANTS = [
     fallbackLng: 127.1204267
   }
 ];
+
+const sortByKoreanName = (a, b) => a.name.localeCompare(b.name, "ko");
+DEVELOPERS.sort(sortByKoreanName);
+TEAM_PROFILE.members.sort(sortByKoreanName);
+FAVORITE_RESTAURANTS.sort((a, b) => a.memberName.localeCompare(b.memberName, "ko"));
 
 window.DEVELOPERS = DEVELOPERS;
 window.ITEMS = ITEMS;

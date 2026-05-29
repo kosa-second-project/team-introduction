@@ -43,7 +43,7 @@
     }
   </style>
   
-  <link rel="stylesheet" href="styles.css?v=20260529-battle-name-tag">
+  <link rel="stylesheet" href="styles.css?v=20260529-mobile-battle">
 </head>
 <body>
   
@@ -196,7 +196,7 @@
             <div class="battle-actions-box" id="battle-main-controls">
               <div class="battle-actions-grid">
                 <button class="battle-opt-btn" id="btn-fight">싸운다</button>
-                <button class="battle-opt-btn" id="btn-hint">힌트</button>
+                <button class="battle-opt-btn" id="btn-hint" disabled aria-disabled="true">힌트</button>
                 <button class="battle-opt-btn" id="btn-battle-dex">도감</button>
                 <button class="battle-opt-btn" id="btn-run">도망</button>
               </div>
@@ -313,6 +313,7 @@
                       <h3>2조 맛집 지도</h3>
                       <p>각자 좋아하는 식당을 카카오맵 위치와 함께 모았습니다.</p>
                       <p class="restaurant-location-status" id="restaurant-location-status">현재 위치 확인 전</p>
+                      <button class="restaurant-location-btn" id="restaurant-location-btn" type="button">현재 위치 표시</button>
                     </div>
                     <div class="restaurant-map-layout">
                       <div class="restaurant-map-view" id="restaurant-map-view">
@@ -451,10 +452,10 @@
     
   </div>
 
-  <script src="data.js?v=20260529-kakao-map-key-2"></script>
+  <script src="data.js?v=20260529-shabro-map"></script>
   <script src="audio.js?v=20260528-monitor-sprites"></script>
   <script src="engine.js?v=20260528-battle-pokemon"></script>
   <script src="dragdrop.js?v=20260529-lunch-map"></script>
-  <script src="app.js?v=20260529-team2-content-map"></script>
+  <script src="app.js?v=20260529-mobile-battle"></script>
 </body>
 </html>
