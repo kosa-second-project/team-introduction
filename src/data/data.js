@@ -5,6 +5,7 @@ const DEVELOPERS = [
     name: "김영만 (Youngman)",
     type: "기획 · 프론트엔드",
     image: "assets/battle/pikachu.png",
+    profileImage: "assets/profile/pikachu-profile.png",
     equippedImage: {
       default: "assets/battle/pikachu.png",
       macbook: "assets/battle/pikachu.png",
@@ -33,6 +34,7 @@ const DEVELOPERS = [
     name: "이유경 (Yukyung)",
     type: "콘텐츠 · UI 설계",
     image: "assets/battle/charmander.png",
+    profileImage: "assets/profile/charmander-profile.png",
     equippedImage: {
       default: "assets/battle/charmander.png",
       macbook: "assets/battle/charmander.png",
@@ -61,6 +63,7 @@ const DEVELOPERS = [
     name: "이주영 (Jooyoung)",
     type: "인터랙션 · 기능 구현",
     image: "assets/battle/squirtle.png",
+    profileImage: "assets/profile/squirtle-profile.png",
     equippedImage: {
       default: "assets/battle/squirtle.png",
       macbook: "assets/battle/squirtle.png",
@@ -89,6 +92,7 @@ const DEVELOPERS = [
     name: "김준하 (Junha)",
     type: "데이터 · 테스트",
     image: "assets/battle/eevee.png",
+    profileImage: "assets/profile/eevee-profile.png",
     equippedImage: {
       default: "assets/battle/eevee.png",
       macbook: "assets/battle/eevee.png",

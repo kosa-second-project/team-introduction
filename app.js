@@ -2550,7 +2550,7 @@ class App {
       return;
     }
 
-    this.renderSpriteElement(personalAvatar, dev.image, dev.name);
+    this.renderSpriteElement(personalAvatar, dev.profileImage || dev.image, dev.name);
     personalTitle.textContent = profile.title;
     personalHeadline.textContent = profile.headline;
     personalLocation.textContent = profile.location;

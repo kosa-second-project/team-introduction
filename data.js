@@ -5,6 +5,7 @@ const DEVELOPERS = [
     name: "김영만 (Youngman)",
     type: "풀스택",
     image: "assets/battle/pikachu.png",
+    profileImage: "assets/profile/pikachu-profile.png",
     equippedImage: {
       default: "assets/battle/pikachu.png",
       youngman_arch_note: "assets/battle/pikachu.png",
@@ -33,6 +34,7 @@ const DEVELOPERS = [
     name: "이유경 (Yukyung)",
     type: "풀스택",
     image: "assets/battle/charmander.png",
+    profileImage: "assets/profile/charmander-profile.png",
     equippedImage: {
       default: "assets/battle/charmander.png",
       yukyung_study_log: "assets/battle/charmander.png",
@@ -61,6 +63,7 @@ const DEVELOPERS = [
     name: "이주영 (Jooyoung)",
     type: "풀스택",
     image: "assets/battle/squirtle.png",
+    profileImage: "assets/profile/squirtle-profile.png",
     equippedImage: {
       default: "assets/battle/squirtle.png",
       jooyoung_runbook: "assets/battle/squirtle.png",
@@ -89,6 +92,7 @@ const DEVELOPERS = [
     name: "김준하 (Junha)",
     type: "프론트엔드",
     image: "assets/battle/eevee.png",
+    profileImage: "assets/profile/eevee-profile.png",
     equippedImage: {
       default: "assets/battle/eevee.png",
       junha_wireframe_note: "assets/battle/eevee.png",
