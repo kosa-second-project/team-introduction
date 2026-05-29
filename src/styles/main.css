@@ -1407,7 +1407,6 @@ body {
   font-family: 'DungGeunMo', monospace;
   cursor: pointer;
   display: flex;
-  min-width: 0;
   flex-direction: column;
   align-items: center;
   gap: 4px;
