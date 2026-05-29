@@ -31,6 +31,8 @@ class App {
     this.stateBeforeOverlay = null;
     this.toastTimer = null;
     this.battleAnimTimer = null;
+    this.isFishing = false;
+    this.currentEncounterMode = "grass";
     this.isAwaitingPokeballThrow = false;
     this.isDraggingPokeball = false;
     this.pokeballThrowRaf = null;
@@ -88,7 +90,7 @@ class App {
     this.createStarField("ending-star-bg", 96);
 
     // 3. 엔진 구동
-    this.engine = new window.GameEngine("world-canvas", () => this.startEncounter());
+    this.engine = new window.GameEngine("world-canvas", (options) => this.startEncounter(options));
 
     // 4. 옷입히기 D&D 바인딩 (Drag & Drop API)
     this.dragDrop = new window.DragDropManager(this);
@@ -636,6 +638,11 @@ class App {
       }
 
       if (this.currentGameState === this.STATE_WORLD) {
+        if (e.key === " " || e.key === "z" || e.key === "Z") {
+          e.preventDefault();
+          this.handlePhysicalAButton();
+          return;
+        }
         if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "s", "a", "d", "W", "S", "A", "D"].includes(e.key)) {
           e.preventDefault();
         }
@@ -804,6 +811,12 @@ class App {
       this.engine.stop();
     }
 
+    if (state !== this.STATE_WORLD && this.engine) {
+      this.isFishing = false;
+      this.engine.setInputLocked(false);
+      this.engine.clearFishingEffect();
+    }
+
     if (state !== this.STATE_BATTLE) {
       this.activeQuiz = null;
       this.isResolvingQuiz = false;
@@ -828,10 +841,9 @@ class App {
       document.getElementById("panel-intro").classList.remove("hidden");
       const video = document.getElementById("intro-video");
       if (video) video.play().catch(() => console.log("인트로 비디오 차단 우회"));
-      window.audioManager.playBgm("intro");
     } else if (state === this.STATE_DIALOGUE) {
       document.getElementById("panel-dialogue").classList.remove("hidden");
-      window.audioManager.playBgm("oak");
+      window.audioManager.playBgm("town");
     } else if (state === this.STATE_WORLD) {
       document.getElementById("panel-world").classList.remove("hidden");
       window.audioManager.playBgm("town");
@@ -860,6 +872,8 @@ class App {
       this.handleStartAction();
     } else if (this.currentGameState === this.STATE_DIALOGUE) {
       this.advanceDialogue();
+    } else if (this.currentGameState === this.STATE_WORLD) {
+      this.attemptFishing();
     } else if (this.currentGameState === this.STATE_BATTLE) {
       if (document.getElementById("battle-quiz-box").classList.contains("hidden")) {
         this.showQuizInterface();
@@ -872,6 +886,42 @@ class App {
       document.getElementById("battle-quiz-box").classList.add("hidden");
       document.getElementById("battle-main-controls").classList.remove("hidden");
     }
+  }
+
+  attemptFishing() {
+    if (!this.engine || this.isFishing || this.isMenuOpen) return;
+    if (this.engine.player.isMoving) return;
+
+    if (!this.engine.isFacingWater()) {
+      window.audioManager.playCollision();
+      this.showTemporaryToast("물가를 바라보고 Space/Z 또는 A 버튼을 누르면 낚시할 수 있어요.");
+      return;
+    }
+
+    if (this.capturedDevs.includes("dev_fullstack")) {
+      window.audioManager.playTone(440, "triangle", 0.08, 0.05);
+      this.showTemporaryToast("이미 이주영을 낚시로 영입했어요.");
+      return;
+    }
+
+    this.isFishing = true;
+    this.engine.setInputLocked(true);
+    this.engine.playFishingEffect(1750);
+    window.audioManager.playTone(523.25, "square", 0.09, 0.05);
+    setTimeout(() => window.audioManager.playTone(659.25, "square", 0.09, 0.05), 110);
+    this.showTemporaryToast("낚싯대를 던졌다...");
+
+    setTimeout(() => {
+      if (!this.isFishing || this.currentGameState !== this.STATE_WORLD) return;
+      window.audioManager.playTone(880, "square", 0.13, 0.08);
+      this.showTemporaryToast("앗! 입질이 왔다!");
+    }, 850);
+
+    setTimeout(() => {
+      if (!this.isFishing || this.currentGameState !== this.STATE_WORLD) return;
+      this.isFishing = false;
+      this.engine.triggerBattle({ forcedDevId: "dev_fullstack", source: "fishing" });
+    }, 1750);
   }
 
   toggleInGameMenu(isOpen) {
@@ -1169,15 +1219,36 @@ class App {
   // ==========================================================================
   // ⚔️ 배틀 시스템 (슬라이드 인 애니메이션 퀄리티 업)
   // ==========================================================================
-  startEncounter() {
-    const uncaptured = window.DEVELOPERS.filter(d => !this.capturedDevs.includes(d.id));
+  startEncounter(options = {}) {
+    const source = options.source || "grass";
+    const sourcePools = {
+      grass: ["dev_frontend", "dev_data"],
+      rockyCliff: ["dev_backend"],
+      fishing: ["dev_fullstack"],
+    };
+    const allowedIds = sourcePools[source] || sourcePools.grass;
+    const uncaptured = window.DEVELOPERS.filter(d => allowedIds.includes(d.id) && !this.capturedDevs.includes(d.id));
+    const forcedEnemy = options.forcedDevId
+      ? window.DEVELOPERS.find(d => d.id === options.forcedDevId)
+      : null;
 
-    if (uncaptured.length === 0) {
-      this.showEndingScreen();
+    if (!forcedEnemy && uncaptured.length === 0) {
+      if (this.hasCompletedDex()) {
+        this.showEndingScreen();
+      } else {
+        this.switchGameState(this.STATE_WORLD);
+      }
       return;
     }
 
-    this.activeEnemy = uncaptured[Math.floor(Math.random() * uncaptured.length)];
+    if (forcedEnemy && this.capturedDevs.includes(forcedEnemy.id)) {
+      this.switchGameState(this.STATE_WORLD);
+      this.showTemporaryToast(`${forcedEnemy.name}은(는) 이미 영입했어요.`);
+      return;
+    }
+
+    this.currentEncounterMode = source;
+    this.activeEnemy = forcedEnemy || uncaptured[Math.floor(Math.random() * uncaptured.length)];
     this.activeQuiz = null;
     this.isResolvingQuiz = false;
     this.resetPokeballThrowState();
@@ -1215,7 +1286,13 @@ class App {
     }, 450); // 450ms 간격으로 숨쉬기 루프
 
     // 대사창 타이핑 효과 적용
-    this.typeWriter("battle-message", `야생의 ${this.activeEnemy.name}(이)가 승부를 걸어왔다! 퀴즈를 풀어 영입해보자!`);
+    const encounterMessages = {
+      fishing: `낚시로 ${this.activeEnemy.name}(이)가 튀어나왔다! 퀴즈를 풀어 몬스터볼로 잡아보자!`,
+      rockyCliff: `암벽 지형에서 ${this.activeEnemy.name}(이)가 모습을 드러냈다! 퀴즈를 풀어 영입해보자!`,
+      grass: `야생의 ${this.activeEnemy.name}(이)가 승부를 걸어왔다! 퀴즈를 풀어 영입해보자!`,
+    };
+    const encounterMessage = encounterMessages[this.currentEncounterMode] || encounterMessages.grass;
+    this.typeWriter("battle-message", encounterMessage);
 
     document.getElementById("battle-quiz-box").classList.add("hidden");
     document.getElementById("battle-main-controls").classList.remove("hidden");
@@ -1233,7 +1310,12 @@ class App {
       splashImage.alt = `야생 ${enemy.name}`;
     }
     if (enemy && splashLabel) {
-      splashLabel.textContent = `야생 ${enemy.name} 발견!`;
+      const splashMessages = {
+        fishing: `낚시 성공! ${enemy.name} 출현!`,
+        rockyCliff: `암벽 조우! ${enemy.name} 출현!`,
+        grass: `야생 ${enemy.name} 발견!`,
+      };
+      splashLabel.textContent = splashMessages[this.currentEncounterMode] || splashMessages.grass;
     }
 
     splash.classList.remove("hidden");

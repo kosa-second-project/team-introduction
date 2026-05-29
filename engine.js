@@ -10,6 +10,7 @@ const WORLD_TILE_ASSETS = {
   tree: `${WORLD_ASSET_BASE}/tiles/tree.png`,
   tallGrass: `${WORLD_ASSET_BASE}/tiles/tall-grass.png`,
   cliff: `${WORLD_ASSET_BASE}/tiles/cliff.png`,
+  rockyCliff: `${WORLD_ASSET_BASE}/tiles/rocky-cliff.png`,
   water: `${WORLD_ASSET_BASE}/tiles/water.png`,
   bridge: `${WORLD_ASSET_BASE}/tiles/bridge.png`,
   labRidge: `${WORLD_ASSET_BASE}/tiles/lab-ridge.png`,
@@ -83,6 +84,7 @@ const TILE_ASSET_NAMES = {
   treeTop: "tree",
   tallGrass: "tallGrass",
   cliffFace: "cliff",
+  rockyCliff: "rockyCliff",
   water: "water",
   bridge: "bridge",
   sign: "sign",
@@ -92,15 +94,18 @@ const TILE_ASSET_NAMES = {
 
 const COLLISION_TILES = new Set([1, 3, 5, 6, 7, 10]);
 const GRASS_ENCOUNTER_RATE = 0.14;
+const ROCKY_CLIFF_ENCOUNTER_RATE = 0.18;
+const WATER_TILE = 6;
+const ROCKY_CLIFF_TILE = 11;
 
 const BATTLE_SPRITES = {
   playerBack: `${PLAYER_ASSET_BASE}/back-1.png`,
   professor: `${STORY_ASSET_BASE}/professor.png`,
   wildbyte: `${BATTLE_ASSET_BASE}/snorlax.png`,
-  dev_frontend: `${BATTLE_ASSET_BASE}/pikachu.png`,
-  dev_backend: `${BATTLE_ASSET_BASE}/charmander.png`,
+  dev_frontend: `${BATTLE_ASSET_BASE}/charmander.png`,
+  dev_backend: `${BATTLE_ASSET_BASE}/eevee.png`,
   dev_fullstack: `${BATTLE_ASSET_BASE}/squirtle.png`,
-  dev_data: `${BATTLE_ASSET_BASE}/eevee.png`,
+  dev_data: `${BATTLE_ASSET_BASE}/pikachu.png`,
 };
 
 class GameEngine {
@@ -133,6 +138,8 @@ class GameEngine {
     };
 
     this.active = false;
+    this.inputLocked = false;
+    this.fishingEffect = null;
     this.lastTime = 0;
     this.keysPressed = {};
   }
@@ -176,6 +183,7 @@ class GameEngine {
     rect(5, 10, 8, 3, 8);
     rect(9, 7, 4, 16, 8);
     rect(12, 17, 12, 3, 8);
+    rect(22, 17, 2, 3, ROCKY_CLIFF_TILE);
     rect(20, 8, 3, 11, 8);
     rect(22, 8, 7, 3, 8);
     rect(8, 23, 11, 3, 8);
@@ -197,6 +205,9 @@ class GameEngine {
     rect(25, 20, 8, 1, 10);
     rect(25, 21, 8, 2, 1);
     rect(27, 16, 2, 4, 8);
+    rect(29, 23, 4, 3, ROCKY_CLIFF_TILE);
+    rect(25, 23, 3, 2, ROCKY_CLIFF_TILE);
+    set(28, 23, ROCKY_CLIFF_TILE);
 
     rect(6, 3, 7, 6, 7);
     rect(16, 4, 5, 5, 7);
@@ -300,6 +311,8 @@ class GameEngine {
   }
 
   handleContinuousInput() {
+    if (this.inputLocked) return;
+
     let dx = 0;
     let dy = 0;
     let dir = "";
@@ -349,9 +362,98 @@ class GameEngine {
     if (currentTile === 2) {
       window.audioManager.playGrassRustle();
       if (Math.random() < GRASS_ENCOUNTER_RATE) {
-        this.triggerBattle();
+        this.triggerBattle({ source: "grass" });
+      }
+    } else if (currentTile === ROCKY_CLIFF_TILE) {
+      window.audioManager.playCollision();
+      if (Math.random() < ROCKY_CLIFF_ENCOUNTER_RATE) {
+        this.triggerBattle({ forcedDevId: "dev_backend", source: "rockyCliff" });
       }
     }
+  }
+
+  setInputLocked(isLocked) {
+    this.inputLocked = isLocked;
+    if (isLocked) this.keysPressed = {};
+  }
+
+  getFacingTile() {
+    const offsets = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
+    const offset = offsets[this.player.dir] || offsets.down;
+    const x = this.player.x + offset.x;
+    const y = this.player.y + offset.y;
+    const tile = x >= 0 && x < this.cols && y >= 0 && y < this.rows
+      ? this.map[y][x]
+      : null;
+
+    return { x, y, tile, dir: this.player.dir };
+  }
+
+  getTileAt(x, y) {
+    return x >= 0 && x < this.cols && y >= 0 && y < this.rows
+      ? this.map[y][x]
+      : null;
+  }
+
+  getFishingTargetTile() {
+    const facing = this.getFacingTile();
+    const directions = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
+    const dir = directions[facing.dir] || directions.down;
+
+    for (let distance = 1; distance <= 2; distance++) {
+      const x = this.player.x + dir.x * distance;
+      const y = this.player.y + dir.y * distance;
+      if (this.getTileAt(x, y) === WATER_TILE) {
+        return { x, y, tile: WATER_TILE, dir: facing.dir };
+      }
+    }
+
+    const nearby = [];
+    for (let y = this.player.y - 2; y <= this.player.y + 2; y++) {
+      for (let x = this.player.x - 2; x <= this.player.x + 2; x++) {
+        if (x === this.player.x && y === this.player.y) continue;
+        if (this.getTileAt(x, y) !== WATER_TILE) continue;
+
+        const dx = x - this.player.x;
+        const dy = y - this.player.y;
+        nearby.push({
+          x,
+          y,
+          tile: WATER_TILE,
+          dir: facing.dir,
+          score: Math.hypot(dx, dy) - (Math.sign(dx) === dir.x || Math.sign(dy) === dir.y ? 0.35 : 0),
+        });
+      }
+    }
+
+    nearby.sort((a, b) => a.score - b.score);
+    return nearby[0] || null;
+  }
+
+  isFacingWater() {
+    return !!this.getFishingTargetTile();
+  }
+
+  playFishingEffect(duration = 1700) {
+    this.fishingEffect = {
+      startedAt: performance.now(),
+      duration,
+      target: this.getFishingTargetTile() || this.getFacingTile(),
+    };
+  }
+
+  clearFishingEffect() {
+    this.fishingEffect = null;
   }
 
   shakeScreen() {
@@ -360,9 +462,11 @@ class GameEngine {
     setTimeout(() => { screenEl.classList.remove("shake"); }, 300);
   }
 
-  triggerBattle() {
+  triggerBattle(options = {}) {
     this.stop();
     this.keysPressed = {};
+    this.clearFishingEffect();
+    this.setInputLocked(false);
     
     window.audioManager.playEncounter();
     const screenEl = document.getElementById("game-screen");
@@ -370,7 +474,7 @@ class GameEngine {
     
     setTimeout(() => {
       screenEl.classList.remove("flash-effect");
-      if (this.onEncounter) this.onEncounter();
+      if (this.onEncounter) this.onEncounter(options);
     }, 850);
   }
 
@@ -397,6 +501,8 @@ class GameEngine {
           this.drawSpriteTile("flower", tx, ty);
         } else if (tileType === 10) {
           this.drawSinnohCliff(tx, ty, c, r, true);
+        } else if (tileType === ROCKY_CLIFF_TILE) {
+          this.drawRockyCliff(tx, ty, c, r);
         } else if (tileType === 1) {
           this.drawSinnohTree(tx, ty, c, r);
         } else if (tileType === 2) {
@@ -419,6 +525,59 @@ class GameEngine {
     this.drawExtraMapCharacters();
 
     this.drawGoldPlayer(this.player.px - this.camera.x, this.player.py - this.camera.y);
+    this.drawFishingEffect();
+  }
+
+  drawFishingEffect() {
+    if (!this.fishingEffect) return;
+
+    const now = performance.now();
+    const elapsed = now - this.fishingEffect.startedAt;
+    if (elapsed > this.fishingEffect.duration) {
+      this.clearFishingEffect();
+      return;
+    }
+
+    const tile = this.tileSize;
+    const dir = this.fishingEffect.target.dir;
+    const target = this.fishingEffect.target;
+    const playerX = this.player.px - this.camera.x + tile / 2;
+    const playerY = this.player.py - this.camera.y + tile / 2;
+    const handOffsets = {
+      up: { x: 4, y: -19 },
+      down: { x: 5, y: 1 },
+      left: { x: -13, y: -8 },
+      right: { x: 18, y: -8 },
+    };
+    const hand = handOffsets[dir] || handOffsets.down;
+    const startX = playerX + hand.x;
+    const startY = playerY + hand.y;
+    const bobberX = target.x * tile - this.camera.x + tile / 2;
+    const bobberY = target.y * tile - this.camera.y + tile / 2 + Math.sin(now / 100) * 2;
+    const cast = Math.min(1, elapsed / 420);
+    const lineEndX = startX + (bobberX - startX) * cast;
+    const lineEndY = startY + (bobberY - startY) * cast;
+    const ripple = 5 + (elapsed % 520) / 52;
+
+    this.ctx.save();
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = "#232026";
+    this.ctx.beginPath();
+    this.ctx.moveTo(startX, startY);
+    this.ctx.lineTo(lineEndX, lineEndY);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = "rgba(222, 246, 255, 0.82)";
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.ellipse(bobberX, bobberY + 4, ripple, ripple / 2, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = "#f15a24";
+    this.ctx.fillRect(Math.round(bobberX - 2), Math.round(bobberY - 4), 4, 5);
+    this.ctx.fillStyle = "#fff3c4";
+    this.ctx.fillRect(Math.round(bobberX - 2), Math.round(bobberY - 7), 4, 3);
+    this.ctx.restore();
   }
 
   drawMapAsset(name, x, y, width, height, options = {}) {
@@ -522,6 +681,10 @@ class GameEngine {
       return;
     }
     this.drawSpriteTile("cliffFace", x, y);
+  }
+
+  drawRockyCliff(x, y, col, row) {
+    this.drawSpriteTile("rockyCliff", x, y);
   }
 
   drawSinnohWater(x, y, col, row) {
