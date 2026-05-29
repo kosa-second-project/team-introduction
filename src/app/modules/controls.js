@@ -240,9 +240,10 @@ Object.assign(window.App.prototype, {
       document.getElementById("panel-intro").classList.remove("hidden");
       const video = document.getElementById("intro-video");
       if (video) video.play().catch(() => {});
+      window.audioManager.playBgm("intro");
     } else if (state === this.STATE_DIALOGUE) {
       document.getElementById("panel-dialogue").classList.remove("hidden");
-      window.audioManager.playBgm("town");
+      window.audioManager.playBgm("oak");
     } else if (state === this.STATE_WORLD) {
       document.getElementById("panel-world").classList.remove("hidden");
       window.audioManager.playBgm("town");
