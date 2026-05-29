@@ -196,13 +196,14 @@ Object.assign(window.App.prototype, {
     window.audioManager.playTone(880, "square", 0.12, 0.1);
 
     this.dialogueQueue = [
-      "오박사: 앗! 안녕하신가! 포켓몬스터 개발자 월드에 오신 것을 대환영하네!",
-      `오박사: 자네는 GPS [ ${this.trainerLocation} ] 근처에서 온 신예 트레이너로군!`,
-      "오박사: 이 숲 속의 무성한 수풀을 돌아다니다 보면 전설의 개발자몬들이 출현한다네.",
-      "오박사: 출현한 개발자몬들에게 퀴즈를 내어 정답을 맞추면 동료로 영입할 수 있지!",
-      "오박사: 숲을 걷다가 [Enter 키 / MENU 버튼]을 누르면 메뉴창을 열 수 있어.",
-      "오박사: 영입 완료한 개발자몬에게는 도감에서 최적의 고성능 장비를 장착시켜줄 수 있다네.",
-      "오박사: 자! 그럼 전설의 도감을 완성하러 모험의 세계로 출발하세!"
+      "오박사: 앗! 안녕하신가! 여기는 2조 개발자몬 월드라네!",
+      "오박사: 우리 2조에는 영만, 유경, 주영, 준하 네 명의 개발자몬이 함께하고 있지.",
+      "오박사: 자네는 이제 막 도감을 들고 모험을 시작한 신예 트레이너로군!",
+      "오박사: 풀숲을 돌아다니다 보면 2조 개발자몬들이 하나씩 등장할 걸세.",
+      "오박사: 개발자몬을 만나면 [싸운다]를 눌러 퀴즈에 도전하게. 정답을 맞히면 몬스터볼을 던질 수 있지!",
+      "오박사: 포획한 개발자몬은 [Enter 키 / MENU 버튼]으로 도감을 열어 다시 확인할 수 있다네.",
+      "오박사: 도감에는 팀 소개, 각자 좋아하는 식당 지도, 장비 장착 기록까지 들어 있다네.",
+      "오박사: 자, 2조 개발자 도감을 완성하러 출발해 보세!"
     ];
     this.dialogueIndex = 0;
 
@@ -220,6 +221,9 @@ Object.assign(window.App.prototype, {
       this.activeQuiz = null;
       this.isResolvingQuiz = false;
       this.resetPokeballThrowState();
+    }
+    if (state !== this.STATE_ENDING) {
+      this.stopEndingVideo();
     }
 
     this.currentGameState = state;
@@ -256,6 +260,7 @@ Object.assign(window.App.prototype, {
       document.getElementById("panel-ending").classList.remove("hidden");
       window.audioManager.playBgm("town");
       this.renderEndingShowcase();
+      this.playEndingVideo();
     }
   },
 

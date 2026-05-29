@@ -447,7 +447,8 @@ Object.assign(window.App.prototype, {
     const quizBox = document.getElementById("battle-quiz-box");
     if (quizBox && !quizBox.classList.contains("hidden")) return;
 
-    this.activeQuiz = window.QUIZZES[Math.floor(Math.random() * window.QUIZZES.length)];
+    const enemyQuiz = window.QUIZZES.find(quiz => quiz.developerId === this.activeEnemy?.id);
+    this.activeQuiz = enemyQuiz || window.QUIZZES[Math.floor(Math.random() * window.QUIZZES.length)];
 
     document.getElementById("battle-main-controls").classList.add("hidden");
     quizBox.classList.remove("hidden");

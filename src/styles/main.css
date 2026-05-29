@@ -310,14 +310,6 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.15; }
 }
-.geolocation-info {
-  font-family: 'DungGeunMo', monospace;
-  font-size: 11px;
-  color: #314454;
-  padding: 5px 12px;
-}
-
-
 /* 2) 오박사 인트로 씬 (포켓몬 골드 오프닝 스타일) */
 #panel-dialogue {
   overflow: hidden;
@@ -1361,6 +1353,20 @@ body {
 .ending-msg {
   font-size: 13px;
   color: #c8f7ff;
+}
+.ending-video-frame {
+  width: min(82%, 480px);
+  aspect-ratio: 16 / 9;
+  border: 4px double #f8f8d8;
+  background: #050812;
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.45);
+}
+.ending-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #050812;
 }
 .ending-dev-showcase {
   width: min(92%, 620px);
@@ -2604,6 +2610,9 @@ body {
   .ending-subtitle,
   .ending-msg {
     font-size: 11px;
+  }
+  .ending-video-frame {
+    width: min(92%, 340px);
   }
   .ending-dev-showcase {
     grid-template-columns: repeat(2, 1fr);

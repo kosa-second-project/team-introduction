@@ -13,21 +13,21 @@ const DEVELOPERS = [
       youngman_focus_timer: "assets/battle/charmander.png",
       youngman_review_pen: "assets/battle/charmander.png",
     },
-    stats: { hp: 105, coding: 86, debugging: 78, design: 88, speed: 82 },
-    description: "2조에서 스터디를 함께 이어가는 풀스택 지망 개발자입니다. 차분하게 흐름을 정리하고 필요한 내용을 꾸준히 쌓아갑니다.",
+    stats: { hp: 105, coding: 86, debugging: 82, design: 84, speed: 80 },
+    description: "스터디 흐름을 차분하게 정리하고 팀의 페이스를 안정적으로 맞추는 개발자몬입니다. 복만이를 떠올리게 하는 든든함으로 어려운 내용도 천천히 자기 것으로 만듭니다.",
     projects: [
       {
-        title: "아키텍처 스터디 1주차",
+        title: "스터디 흐름 정리",
         tech: "Architecture Study",
-        desc: "서비스 구조를 바라보는 기본 관점과 역할 분리를 함께 정리했습니다.",
+        desc: "아키텍처 스터디에서 나온 핵심 키워드와 역할 분리를 팀이 다시 볼 수 있게 정리합니다.",
       },
       {
-        title: "클라우드 스터디 예정",
-        tech: "Cloud Study",
-        desc: "배포 환경과 인프라 흐름을 이해하기 위한 다음 스터디를 준비하고 있습니다."
+        title: "팀 발표 안정화",
+        tech: "Presentation Flow",
+        desc: "발표 순서와 도감 내용을 자연스럽게 이어 팀 소개가 흔들리지 않도록 잡아줍니다.",
       }
     ],
-    equipped: [] // 장착된 아이템 목록
+    equipped: []
   },
   {
     id: "dev_backend",
@@ -42,18 +42,18 @@ const DEVELOPERS = [
       yukyung_soft_earbuds: "assets/battle/eevee.png",
       yukyung_check_stamp: "assets/battle/eevee.png",
     },
-    stats: { hp: 102, coding: 82, debugging: 84, design: 91, speed: 76 },
-    description: "2조에서 스터디를 함께 이어가는 풀스택 지망 개발자입니다. 내용을 꼼꼼히 읽고 팀 안에서 이해한 부분을 담백하게 정리합니다.",
+    stats: { hp: 102, coding: 83, debugging: 86, design: 90, speed: 78 },
+    description: "꼼꼼하게 읽고 이해한 내용을 보기 좋게 다듬는 개발자몬입니다. 클라이밍처럼 한 칸씩 루트를 잡아가며 복잡한 개념도 차근차근 올라갑니다.",
     projects: [
       {
-        title: "아키텍처 스터디 1주차",
-        tech: "Architecture Study",
-        desc: "서비스 구조를 바라보는 기본 관점과 역할 분리를 함께 정리했습니다.",
+        title: "콘텐츠 구조 다듬기",
+        tech: "UX Writing",
+        desc: "팀원 소개, 퀴즈, 도감 문구가 한 화면 안에서 자연스럽게 읽히도록 정리합니다.",
       },
       {
-        title: "클라우드 스터디 예정",
-        tech: "Cloud Study",
-        desc: "배포 환경과 인프라 흐름을 이해하기 위한 다음 스터디를 준비하고 있습니다."
+        title: "정보 카드 구성",
+        tech: "HTML, CSS",
+        desc: "개발자 카드의 제목, 특징, 역할 태그를 사용자가 빠르게 파악할 수 있게 배치합니다.",
       }
     ],
     equipped: []
@@ -71,18 +71,18 @@ const DEVELOPERS = [
       jooyoung_energy_drink: "assets/battle/squirtle.png",
       jooyoung_commit_badge: "assets/battle/squirtle.png",
     },
-    stats: { hp: 108, coding: 90, debugging: 87, design: 74, speed: 86 },
-    description: "2조에서 스터디를 함께 이어가는 풀스택 지망 개발자입니다. 필요한 내용을 빠르게 파악하고 실행으로 옮기는 편입니다.",
+    stats: { hp: 108, coding: 91, debugging: 87, design: 76, speed: 86 },
+    description: "필요한 기능을 빠르게 파악하고 실행으로 옮기는 개발자몬입니다. ISTJ다운 안정적인 루틴으로 퀴즈, 도감, 지도 같은 기능을 끝까지 연결합니다.",
     projects: [
       {
-        title: "아키텍처 스터디 1주차",
-        tech: "Architecture Study",
-        desc: "서비스 구조를 바라보는 기본 관점과 역할 분리를 함께 정리했습니다.",
+        title: "게임 흐름 연결",
+        tech: "JavaScript, State",
+        desc: "전투에서 퀴즈를 풀고 포획한 뒤 도감으로 이어지는 플레이 흐름을 자연스럽게 묶습니다.",
       },
       {
-        title: "클라우드 스터디 예정",
-        tech: "Cloud Study",
-        desc: "배포 환경과 인프라 흐름을 이해하기 위한 다음 스터디를 준비하고 있습니다."
+        title: "인터랙션 구현",
+        tech: "DOM, Drag and Drop",
+        desc: "메뉴, 도감, 장비 장착처럼 사용자가 직접 만지는 부분의 반응을 안정적으로 만듭니다.",
       }
     ],
     equipped: []
@@ -100,18 +100,18 @@ const DEVELOPERS = [
       junha_flow_lens: "assets/battle/pikachu.png",
       junha_layout_ruler: "assets/battle/pikachu.png",
     },
-    stats: { hp: 99, coding: 84, debugging: 92, design: 68, speed: 79 },
-    description: "2조에서 스터디를 함께 이어가는 프론트엔드 지망 개발자입니다. 화면에서 보이는 흐름과 사용자 입장을 차분히 살핍니다.",
+    stats: { hp: 99, coding: 84, debugging: 92, design: 82, speed: 79 },
+    description: "화면에서 보이는 흐름과 사용자가 느끼는 어색함을 잘 잡아내는 프론트엔드 지망 개발자몬입니다. 6월생다운 산뜻한 에너지로 UI의 빈틈을 발견합니다.",
     projects: [
       {
-        title: "아키텍처 스터디 1주차",
-        tech: "Architecture Study",
-        desc: "서비스 구조를 바라보는 기본 관점과 역할 분리를 함께 정리했습니다.",
+        title: "도감 화면 점검",
+        tech: "Frontend QA",
+        desc: "개발자 카드, 팀 소개, 장비 영역이 한 화면 안에서 어색하지 않게 이어지는지 확인합니다.",
       },
       {
-        title: "클라우드 스터디 예정",
-        tech: "Cloud Study",
-        desc: "배포 환경과 인프라 흐름을 이해하기 위한 다음 스터디를 준비하고 있습니다."
+        title: "사용자 흐름 검증",
+        tech: "Scenario Test",
+        desc: "인트로, 전투, 포획, 도감 열람까지 실제 플레이 순서대로 확인하며 상태 오류를 줄입니다.",
       }
     ],
     equipped: []
@@ -125,7 +125,7 @@ const ITEMS = [
     ownerId: "dev_frontend",
     slot: "item-slot-desk",
     name: "아키텍처 노트",
-    description: "흐름을 정리하는 힘이 올라갑니다.",
+    description: "팀의 학습 흐름을 정리하는 힘이 올라갑니다.",
     icon: "📓",
     statsBoost: { design: 10, debugging: 5 }
   },
@@ -134,7 +134,7 @@ const ITEMS = [
     ownerId: "dev_frontend",
     slot: "item-slot-hand",
     name: "클라우드 지도",
-    description: "다음 스터디 방향을 잡는 아이템입니다.",
+    description: "다음 스터디 방향을 또렷하게 잡아줍니다.",
     icon: "🗺️",
     statsBoost: { coding: 15, speed: 10 }
   },
@@ -266,186 +266,151 @@ const ITEMS = [
   }
 ];
 
-// 야생의 퀴즈 데이터 정의 (스터디 주제 기반 퀴즈)
+// 각 개발자몬 전용 퀴즈 데이터
 const QUIZZES = [
   {
-    question: "소프트웨어 아키텍처를 정리할 때 가장 먼저 확인하면 좋은 것은?",
-    options: [
-      "화면 색상만 정하기",
-      "서비스가 해결하려는 문제와 주요 흐름 파악하기",
-      "파일 이름을 먼저 전부 바꾸기",
-      "배포 날짜만 정하기"
-    ],
+    developerId: "dev_fullstack",
+    question: "이주영 개발자몬의 MBTI는?",
+    options: ["ISFJ", "ENTJ", "ESFP", "ISTJ"],
+    answer: 3,
+    hint: "계획적이고 차분하게 끝까지 해내는 타입입니다."
+  },
+  {
+    developerId: "dev_backend",
+    question: "이유경 개발자몬의 취미는?",
+    options: ["줄넘기", "클라이밍", "배드민턴", "축구"],
     answer: 1,
-    hint: "구조는 목적과 흐름을 이해한 뒤에 잡는 편이 좋습니다."
+    hint: "손끝과 집중력으로 한 칸씩 올라가는 운동입니다."
   },
   {
-    question: "계층형 구조에서 표현 영역과 데이터 처리 영역을 나누는 주된 이유는?",
-    options: [
-      "책임을 분리해 변경 영향을 줄이기 위해",
-      "파일 수를 무조건 늘리기 위해",
-      "이름을 어렵게 만들기 위해",
-      "사용자 입력을 막기 위해"
-    ],
+    developerId: "dev_frontend",
+    question: "김영만 개발자몬이 키우는 강아지 이름은?",
+    options: ["복만이", "복복이", "복슬이", "복덩이"],
     answer: 0,
-    hint: "각 영역이 맡는 일을 분명히 하면 유지보수가 쉬워집니다."
+    hint: "영만과 이름 운율이 가장 잘 맞는 친구입니다."
   },
   {
-    question: "클라우드 스터디에서 다루기 좋은 기본 주제로 가장 알맞은 것은?",
-    options: [
-      "서버 배포와 네트워크 흐름",
-      "로고 색상 고르기",
-      "팀 이름만 다시 정하기",
-      "키보드 단축키 외우기"
-    ],
-    answer: 0,
-    hint: "클라우드는 서비스를 어디에, 어떻게 올리고 연결하는지부터 보면 좋습니다."
-  },
-  {
-    question: "아키텍처 스터디 내용을 팀 소개에 넣을 때 가장 자연스러운 방식은?",
-    options: [
-      "개인별 기능 목록처럼 과장해서 적기",
-      "스터디 주제와 앞으로의 학습 방향을 간단히 적기",
-      "아무 설명 없이 이름만 나열하기",
-      "모든 용어를 길게 풀어쓰기"
-    ],
-    answer: 1,
-    hint: "아직 프로젝트 전이라면 학습 과정과 방향을 담백하게 보여주는 편이 좋습니다."
-  },
-  {
-    question: "협업 스터디에서 기록을 남기는 이유로 가장 적절한 것은?",
-    options: [
-      "나중에 다시 보고 팀의 이해도를 맞추기 위해",
-      "회의 시간을 늘리기 위해",
-      "누가 더 많이 말했는지 세기 위해",
-      "자료를 숨기기 위해"
-    ],
-    answer: 0,
-    hint: "기록은 다음 학습으로 이어지는 기준점이 됩니다."
-  },
-  {
-    question: "Git에서 원격 저장소의 최신 변경 내용을 로컬에 다운로드하여 병합(Merge)까지 한 번에 수행하는 명령은?",
-    options: [
-      "git fetch",
-      "git clone",
-      "git pull",
-      "git push"
-    ],
+    developerId: "dev_data",
+    question: "김준하 개발자몬이 태어난 달은?",
+    options: ["2월", "4월", "6월", "8월"],
     answer: 2,
-    hint: "원격지 소스를 동기화하면서 병합을 자동으로 실행해 주는 명령어입니다."
+    hint: "여름이 막 시작되는 달입니다."
   }
 ];
 
-// ESM 모듈화 대신 바닐라 전역 객체로 사용 (여러 스크립트 로드 방식 고려)
 const TEAM_PROFILE = {
   title: "2조 개발자 도감",
-  subtitle: "김영만, 이유경, 이주영, 김준하가 함께 스터디를 이어가는 팀입니다.",
-  motto: "아키텍처 스터디 1주차를 마쳤고, 다음은 클라우드 스터디로 이어갑니다.",
+  subtitle: "김영만, 이유경, 이주영, 김준하가 함께 만든 레트로 개발자몬 모험팀입니다.",
+  motto: "퀴즈를 풀고 개발자몬을 영입하며 2조의 성향, 취미, 취향, 스터디 기록을 하나씩 모아갑니다.",
   members: [
-    { id: "dev_frontend", name: "김영만", role: "풀스택", trait: "흐름을 차분히 정리하는 편" },
-    { id: "dev_backend", name: "이유경", role: "풀스택", trait: "내용을 꼼꼼히 다듬는 편" },
-    { id: "dev_fullstack", name: "이주영", role: "풀스택", trait: "빠르게 이해하고 실행하는 편" },
-    { id: "dev_data", name: "김준하", role: "프론트엔드", trait: "사용자 관점으로 살피는 편" }
+    { id: "dev_frontend", name: "김영만", role: "풀스택", trait: "흐름을 차분하게 잡아주는 안정형 개발자몬" },
+    { id: "dev_backend", name: "이유경", role: "풀스택", trait: "정보를 꼼꼼하게 읽고 다듬는 클라이밍형 개발자몬" },
+    { id: "dev_fullstack", name: "이주영", role: "풀스택", trait: "계획적으로 기능을 연결하는 ISTJ 개발자몬" },
+    { id: "dev_data", name: "김준하", role: "프론트엔드", trait: "사용자 흐름을 빠르게 발견하는 프론트엔드 개발자몬" }
   ]
 };
 
 const DEVELOPER_PROFILES = {
   dev_frontend: {
     title: "김영만의 개발자 카드",
-    headline: "풀스택을 목표로 공부하며 전체 흐름을 차분하게 정리합니다.",
-    location: "2조 / Architecture Study",
-    contact: "Team Member 01",
-    stack: ["풀스택", "아키텍처", "클라우드 예정", "정리", "꾸준함"],
+    headline: "스터디 내용을 차분히 정리하고 팀이 같은 방향을 보도록 돕습니다.",
+    location: "2조 / Developer Town",
+    contact: "좋아하는 식당: 뚱가의정부부대찌개 가락점",
+    stack: ["풀스택", "스터디 정리", "아키텍처", "클라우드", "복만이"],
     links: [
-      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
-      { label: "역할: 스터디 참여" },
-      { label: "특징: 안정감" }
+      { label: "역할: 흐름 정리" },
+      { label: "퀴즈 키워드: 복만이" },
+      { label: "점심 픽: 부대찌개" }
     ]
   },
   dev_backend: {
     title: "이유경의 개발자 카드",
-    headline: "풀스택을 목표로 공부하며 내용을 꼼꼼하게 이해하고 정리합니다.",
-    location: "2조 / Architecture Study",
-    contact: "Team Member 02",
-    stack: ["풀스택", "아키텍처", "클라우드 예정", "기록", "섬세함"],
+    headline: "복잡한 내용을 꼼꼼히 읽고 누구나 보기 좋은 카드로 다듬습니다.",
+    location: "2조 / Content Lab",
+    contact: "좋아하는 식당: K밥상",
+    stack: ["풀스택", "콘텐츠", "UX Writing", "기록", "클라이밍"],
     links: [
-      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
-      { label: "역할: 스터디 참여" },
-      { label: "특징: 꼼꼼함" }
+      { label: "역할: 소개 구성" },
+      { label: "퀴즈 키워드: 클라이밍" },
+      { label: "점심 픽: 한식" }
     ]
   },
   dev_fullstack: {
     title: "이주영의 개발자 카드",
-    headline: "풀스택을 목표로 공부하며 배운 내용을 빠르게 적용해 봅니다.",
-    location: "2조 / Architecture Study",
-    contact: "Team Member 03",
-    stack: ["풀스택", "아키텍처", "클라우드 예정", "실행력", "적응력"],
+    headline: "필요한 기능을 계획적으로 연결하고 플레이 가능한 흐름으로 완성합니다.",
+    location: "2조 / Interaction Lab",
+    contact: "좋아하는 식당: 불의여우",
+    stack: ["풀스택", "JavaScript", "상태 관리", "인터랙션", "ISTJ"],
     links: [
-      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
-      { label: "역할: 스터디 참여" },
-      { label: "특징: 실행력" }
+      { label: "역할: 기능 연결" },
+      { label: "퀴즈 키워드: ISTJ" },
+      { label: "점심 픽: 일식" }
     ]
   },
   dev_data: {
     title: "김준하의 개발자 카드",
-    headline: "프론트엔드를 목표로 공부하며 사용자에게 보이는 흐름을 중요하게 봅니다.",
-    location: "2조 / Architecture Study",
-    contact: "Team Member 04",
-    stack: ["프론트엔드", "아키텍처", "클라우드 예정", "사용자 관점", "분석력"],
+    headline: "사용자가 실제로 보는 화면의 흐름과 빈틈을 꼼꼼하게 확인합니다.",
+    location: "2조 / Frontend Lab",
+    contact: "좋아하는 식당: 함경도찹쌀순대",
+    stack: ["프론트엔드", "UI 점검", "디버깅", "사용자 흐름", "6월생"],
     links: [
-      { label: "개인 포트폴리오", url: "https://nunomi0.github.io/" },
-      { label: "역할: 스터디 참여" },
-      { label: "특징: 관찰력" }
+      { label: "역할: 화면 검증" },
+      { label: "퀴즈 키워드: 6월" },
+      { label: "점심 픽: 순댓국" }
     ]
   }
 };
 
-const KAKAO_MAP_APP_KEY = "";
+const KAKAO_MAP_APP_KEY = "6d7b76cc96d7ca7daa92386444932c44";
 
 const FAVORITE_RESTAURANTS = [
   {
     id: "lunch_youngman",
     memberId: "dev_frontend",
     memberName: "김영만",
-    placeName: "취영루 송파점",
-    query: "취영루 송파점 경찰병원역",
-    category: "중식",
-    reason: "여럿이 가도 메뉴 선택이 편한 중식 픽입니다.",
-    fallbackLat: 37.4951,
-    fallbackLng: 127.1253
+    placeName: "뚱가의정부부대찌개 가락점",
+    query: "뚱가의정부부대찌개 가락점 서울 송파구 양재대로62길 42",
+    address: "서울 송파구 양재대로62길 42",
+    category: "부대찌개",
+    reason: "든든하고 빠르게 에너지를 채우기 좋은 영만의 점심 픽입니다.",
+    fallbackLat: 37.4969824,
+    fallbackLng: 127.1197239
   },
   {
     id: "lunch_yukyung",
     memberId: "dev_backend",
     memberName: "이유경",
-    placeName: "팔각도 송파가락점",
-    query: "팔각도 송파가락점 경찰병원역",
-    category: "닭구이",
-    reason: "든든하게 먹고 오후 스터디로 넘어가기 좋은 선택입니다.",
-    fallbackLat: 37.4978,
-    fallbackLng: 127.1237
+    placeName: "K밥상",
+    query: "K밥상 서울 송파구 중대로 135",
+    address: "서울 송파구 중대로 135 지하1층 113호",
+    category: "한식",
+    reason: "스터디 전후에 부담 없이 먹기 좋은 유경의 한식 픽입니다.",
+    fallbackLat: 37.4951285,
+    fallbackLng: 127.1224488
   },
   {
     id: "lunch_jooyoung",
     memberId: "dev_fullstack",
     memberName: "이주영",
-    placeName: "토담",
-    query: "토담 송이로17길 경찰병원역",
-    category: "한식",
-    reason: "집밥 느낌으로 조용히 한 끼 먹기 좋은 한식 픽입니다.",
-    fallbackLat: 37.4972,
-    fallbackLng: 127.1275
+    placeName: "불의여우",
+    query: "불의여우 서울 송파구 양재대로62길 20",
+    address: "서울 송파구 양재대로62길 20 1층",
+    category: "일식",
+    reason: "집중해서 개발한 뒤 깔끔하게 먹기 좋은 주영의 식당 픽입니다.",
+    fallbackLat: 37.4969824,
+    fallbackLng: 127.1197239
   },
   {
     id: "lunch_junha",
     memberId: "dev_data",
     memberName: "김준하",
-    placeName: "함경도 찹쌀순대 가락시장",
-    query: "함경도 찹쌀순대 가락시장 경찰병원역",
+    placeName: "함경도찹쌀순대",
+    query: "함경도찹쌀순대 서울 송파구 송파대로28길 32",
+    address: "서울 송파구 송파대로28길 32",
     category: "순댓국",
-    reason: "빠르고 든든하게 먹기 좋은 점심 후보입니다.",
-    fallbackLat: 37.4935,
-    fallbackLng: 127.1186
+    reason: "뜨끈하고 든든하게 회복하기 좋은 준하의 점심 픽입니다.",
+    fallbackLat: 37.4945055,
+    fallbackLng: 127.1204267
   }
 ];
 

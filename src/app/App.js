@@ -3,7 +3,6 @@ class App {
   constructor() {
     this.capturedDevs = []; 
     this.currentSelectedDevId = null; 
-    this.trainerLocation = "태초마을";
     this.activeEnemy = null;
     this.activeQuiz = null;
     this.isResolvingQuiz = false;
@@ -67,15 +66,12 @@ class App {
     // 0. 배틀 스프라이트 이미지 선로드 (캐시)
     window.GameEngine.preloadBattleSprites();
 
-    // 1. GPS 위치 확인 (Geolocation API)
-    this.getTrainerLocation();
-
-    // 2. 로컬 스토리지 데이터 로드 (Web Storage API)
+    // 1. 로컬 스토리지 데이터 로드 (Web Storage API)
     this.loadCustomItems();
     this.loadGameState();
     this.loadCaptureVideos();
 
-    // 2-1. 인트로/엔딩 별 파티클 렌더
+    // 2. 인트로/엔딩 별 파티클 렌더
     this.createStarField("intro-star-field", 72);
     this.createStarField("ending-star-bg", 96);
 

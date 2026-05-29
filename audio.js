@@ -7,20 +7,18 @@ class AudioManager {
     this.currentBgmType = ""; // 'town', 'battle'
     this.masterVolume = this.loadSavedVolume();
     this.bgmBaseVolumes = {
-      intro: 0.30,
-      oak: 0.25,
-      town: 0.18,
-      battle: 0.30
+      town: 0.05,
+      battle: 0.08
     };
   }
 
   loadSavedVolume() {
     try {
       const saved = window.localStorage.getItem("pixelGameVolume");
-      if (saved === null) return 1.0;
+      if (saved === null) return 0.8;
       return this.clampVolume(Number(saved));
     } catch (e) {
-      return 1.0;
+      return 0.8;
     }
   }
 
@@ -185,21 +183,13 @@ class AudioManager {
     }
 
     // 저작권 없는 무료 8비트 스타일 BGM 링크 매핑 (WAV / MP3)
-    if (type === "intro") {
-      // 다운로드한 포켓몬스터 골드버전 BGM - 배틀 승리 음악
-      this.bgm.src = "./pokemon_victory.mp4";
-      this.bgm.volume = this.getBgmVolume(type);
-    } else if (type === "oak") {
-      // 다운로드한 포켓몬스터 골드버전 BGM - 오박사 연구소
-      this.bgm.src = "./pokemon_oak.mp4";
-      this.bgm.volume = this.getBgmVolume(type);
-    } else if (type === "town") {
+    if (type === "town") {
       // 태초마을 느낌의 부드러운 8bit 루프 음악
       this.bgm.src = "https://incompetech.com/music/royalty-free/mp3-royaltyfree/8bit%20Dungeon%20Level.mp3";
       this.bgm.volume = this.getBgmVolume(type); // 마일드하게 재생
     } else if (type === "battle") {
-      // 다운로드한 포켓몬스터 골드버전 BGM - 야생포켓몬 배틀
-      this.bgm.src = "./pokemon_battle.mp4";
+      // 배틀 느낌의 긴장감 넘치는 음악
+      this.bgm.src = "https://incompetech.com/music/royalty-free/mp3-royaltyfree/8bit%20Dungeon%20Boss.mp3";
       this.bgm.volume = this.getBgmVolume(type);
     }
 

@@ -15,6 +15,31 @@ Object.assign(window.App.prototype, {
     window.audioManager.playCatchSuccess();
   },
 
+  playEndingVideo() {
+    const video = document.getElementById("ending-video");
+    if (!video) return;
+
+    video.currentTime = 0;
+    video.muted = false;
+    const playPromise = video.play();
+    if (playPromise?.catch) {
+      playPromise.catch(() => {
+        video.muted = true;
+        video.play().catch(() => {
+          this.showTemporaryToast("엔딩 영상의 재생 버튼을 눌러 확인해 주세요.");
+        });
+      });
+    }
+  },
+
+  stopEndingVideo() {
+    const video = document.getElementById("ending-video");
+    if (!video) return;
+
+    video.pause();
+    video.currentTime = 0;
+  },
+
   renderEndingShowcase() {
     const showcase = document.getElementById("ending-dev-showcase");
     if (!showcase) return;

@@ -18,31 +18,6 @@ Object.assign(window.App.prototype, {
     }
   },
 
-  getTrainerLocation() {
-    const geoText = document.getElementById("geo-info");
-    if (!navigator.geolocation) {
-      geoText.textContent = "GPS 미지원 브라우저입니다.";
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude.toFixed(2);
-        const lon = position.coords.longitude.toFixed(2);
-        this.trainerLocation = `${lat}, ${lon}`;
-        geoText.textContent = `GPS 감지: 트레이너 위치 [${this.trainerLocation}]`;
-        document.getElementById("hud-trainer-name").textContent = `트레이너 (L.35)`;
-        document.getElementById("player-trainer-name").textContent = `지우 (GPS:${lat})`;
-      },
-      (error) => {
-        console.warn("GPS 수신 동의 안 됨:", error);
-        geoText.textContent = "위치 미동의: 태초마을 트레이너로 등록됨.";
-        document.getElementById("hud-trainer-name").textContent = "트레이너 지우";
-        document.getElementById("player-trainer-name").textContent = "지우";
-      }
-    );
-  },
-
   loadGameState() {
     try {
       const saved = localStorage.getItem("dev_pokedex_save_fs");

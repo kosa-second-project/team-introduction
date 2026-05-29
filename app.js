@@ -3,7 +3,6 @@ class App {
   constructor() {
     this.capturedDevs = []; 
     this.currentSelectedDevId = null; 
-    this.trainerLocation = "태초마을";
     this.activeEnemy = null;
     this.activeQuiz = null;
     this.isResolvingQuiz = false;
@@ -77,15 +76,12 @@ class App {
     // 0. 배틀 스프라이트 이미지 선로드 (캐시)
     window.GameEngine.preloadBattleSprites();
 
-    // 1. GPS 위치 확인 (Geolocation API)
-    this.getTrainerLocation();
-
-    // 2. 로컬 스토리지 데이터 로드 (Web Storage API)
+    // 1. 로컬 스토리지 데이터 로드 (Web Storage API)
     this.loadGameState();
     this.loadCaptureVideos();
     this.loadCustomItems();
 
-    // 2-1. 인트로/엔딩 별 파티클 렌더
+    // 2. 인트로/엔딩 별 파티클 렌더
     this.createStarField("intro-star-field", 72);
     this.createStarField("ending-star-bg", 96);
 
@@ -122,31 +118,6 @@ class App {
     }
   }
 
-
-  getTrainerLocation() {
-    const geoText = document.getElementById("geo-info");
-    if (!navigator.geolocation) {
-      geoText.textContent = "GPS 미지원 브라우저입니다.";
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude.toFixed(2);
-        const lon = position.coords.longitude.toFixed(2);
-        this.trainerLocation = `${lat}, ${lon}`;
-        geoText.textContent = `GPS 감지: 트레이너 위치 [${this.trainerLocation}]`;
-        document.getElementById("hud-trainer-name").textContent = `트레이너 (L.35)`;
-        document.getElementById("player-trainer-name").textContent = `지우 (GPS:${lat})`;
-      },
-      (error) => {
-        console.warn("GPS 수신 동의 안 됨:", error);
-        geoText.textContent = "위치 미동의: 태초마을 트레이너로 등록됨.";
-        document.getElementById("hud-trainer-name").textContent = "트레이너 지우";
-        document.getElementById("player-trainer-name").textContent = "지우";
-      }
-    );
-  }
 
   loadGameState() {
     try {
@@ -792,13 +763,14 @@ class App {
     window.audioManager.playTone(880, "square", 0.12, 0.1);
 
     this.dialogueQueue = [
-      "오박사: 앗! 안녕하신가! 포켓몬스터 개발자 월드에 오신 것을 대환영하네!",
-      `오박사: 자네는 GPS [ ${this.trainerLocation} ] 근처에서 온 신예 트레이너로군!`,
-      "오박사: 이 숲 속의 무성한 수풀을 돌아다니다 보면 전설의 개발자몬들이 출현한다네.",
-      "오박사: 출현한 개발자몬들에게 퀴즈를 내어 정답을 맞추면 동료로 영입할 수 있지!",
-      "오박사: 숲을 걷다가 [Enter 키 / MENU 버튼]을 누르면 메뉴창을 열 수 있어.",
-      "오박사: 영입 완료한 개발자몬에게는 도감에서 최적의 고성능 장비를 장착시켜줄 수 있다네.",
-      "오박사: 자! 그럼 전설의 도감을 완성하러 모험의 세계로 출발하세!"
+      "오박사: 앗! 안녕하신가! 여기는 2조 개발자몬 월드라네!",
+      "오박사: 우리 2조에는 영만, 유경, 주영, 준하 네 명의 개발자몬이 함께하고 있지.",
+      "오박사: 자네는 이제 막 도감을 들고 모험을 시작한 신예 트레이너로군!",
+      "오박사: 풀숲을 돌아다니다 보면 2조 개발자몬들이 하나씩 등장할 걸세.",
+      "오박사: 개발자몬을 만나면 [싸운다]를 눌러 퀴즈에 도전하게. 정답을 맞히면 몬스터볼을 던질 수 있지!",
+      "오박사: 포획한 개발자몬은 [Enter 키 / MENU 버튼]으로 도감을 열어 다시 확인할 수 있다네.",
+      "오박사: 도감에는 팀 소개, 각자 좋아하는 식당 지도, 장비 장착 기록까지 들어 있다네.",
+      "오박사: 자, 2조 개발자 도감을 완성하러 출발해 보세!"
     ];
     this.dialogueIndex = 0;
 
@@ -821,6 +793,9 @@ class App {
       this.activeQuiz = null;
       this.isResolvingQuiz = false;
       this.resetPokeballThrowState();
+    }
+    if (state !== this.STATE_ENDING) {
+      this.stopEndingVideo();
     }
 
     this.currentGameState = state;
@@ -855,6 +830,7 @@ class App {
       document.getElementById("panel-ending").classList.remove("hidden");
       window.audioManager.playBgm("town");
       this.renderEndingShowcase();
+      this.playEndingVideo();
     }
   }
 
@@ -1709,7 +1685,8 @@ class App {
     const quizBox = document.getElementById("battle-quiz-box");
     if (quizBox && !quizBox.classList.contains("hidden")) return;
 
-    this.activeQuiz = window.QUIZZES[Math.floor(Math.random() * window.QUIZZES.length)];
+    const enemyQuiz = window.QUIZZES.find(quiz => quiz.developerId === this.activeEnemy?.id);
+    this.activeQuiz = enemyQuiz || window.QUIZZES[Math.floor(Math.random() * window.QUIZZES.length)];
 
     document.getElementById("battle-main-controls").classList.add("hidden");
     quizBox.classList.remove("hidden");
@@ -1932,6 +1909,31 @@ class App {
     this.renderEndingShowcase();
     this.switchGameState(this.STATE_ENDING);
     window.audioManager.playCatchSuccess();
+  }
+
+  playEndingVideo() {
+    const video = document.getElementById("ending-video");
+    if (!video) return;
+
+    video.currentTime = 0;
+    video.muted = false;
+    const playPromise = video.play();
+    if (playPromise?.catch) {
+      playPromise.catch(() => {
+        video.muted = true;
+        video.play().catch(() => {
+          this.showTemporaryToast("엔딩 영상의 재생 버튼을 눌러 확인해 주세요.");
+        });
+      });
+    }
+  }
+
+  stopEndingVideo() {
+    const video = document.getElementById("ending-video");
+    if (!video) return;
+
+    video.pause();
+    video.currentTime = 0;
   }
 
   renderEndingShowcase() {
@@ -2429,7 +2431,12 @@ class App {
     const restaurants = window.FAVORITE_RESTAURANTS || [];
     const list = document.getElementById("restaurant-list");
     const fallback = document.getElementById("restaurant-map-fallback");
+    const locationStatus = document.getElementById("restaurant-location-status");
     if (!list || !fallback) return;
+
+    if (locationStatus) {
+      locationStatus.textContent = "현재 위치 확인 전";
+    }
 
     list.innerHTML = "";
     restaurants.forEach(restaurant => {
@@ -2454,10 +2461,17 @@ class App {
       const reason = document.createElement("p");
       reason.textContent = restaurant.reason;
 
+      const address = document.createElement("span");
+      address.className = "restaurant-address";
+      address.textContent = restaurant.address || "";
+
       top.appendChild(member);
       top.appendChild(category);
       item.appendChild(top);
       item.appendChild(name);
+      if (restaurant.address) {
+        item.appendChild(address);
+      }
       item.appendChild(reason);
       list.appendChild(item);
     });
@@ -2467,18 +2481,27 @@ class App {
       this.clearRestaurantMap();
       fallback.classList.remove("hidden");
       fallback.textContent = "카카오맵 연결 전";
+      if (locationStatus) {
+        locationStatus.textContent = "카카오맵 연결 후 현재 위치를 표시합니다.";
+      }
       return;
     }
 
     fallback.classList.remove("hidden");
     fallback.textContent = "지도 불러오는 중";
+    if (locationStatus) {
+      locationStatus.textContent = "현재 위치 확인 준비 중";
+    }
 
     this.loadKakaoMapSdk(appKey)
       .then(() => this.drawRestaurantMap(restaurants, activeDevId))
       .catch(() => {
         this.clearRestaurantMap();
         fallback.classList.remove("hidden");
-        fallback.textContent = "지도 연결 실패";
+        fallback.textContent = "카카오맵 인증 실패: JavaScript 키와 도메인 설정을 확인해 주세요.";
+        if (locationStatus) {
+          locationStatus.textContent = "현재 위치를 표시할 수 없습니다.";
+        }
       });
   }
 
@@ -2524,10 +2547,14 @@ class App {
   async drawRestaurantMap(restaurants, activeDevId) {
     const mapContainer = document.getElementById("restaurant-map-view");
     const fallback = document.getElementById("restaurant-map-fallback");
+    const locationStatus = document.getElementById("restaurant-location-status");
     if (!mapContainer || !window.kakao?.maps?.services) return;
 
     fallback?.classList.add("hidden");
     this.clearRestaurantMap();
+    if (locationStatus) {
+      locationStatus.textContent = "현재 위치 확인 중";
+    }
 
     const center = new kakao.maps.LatLng(37.495918, 127.12454);
     this.restaurantMap = new kakao.maps.Map(mapContainer, {
@@ -2537,12 +2564,13 @@ class App {
     this.restaurantMap.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
     const places = new kakao.maps.services.Places();
+    const geocoder = new kakao.maps.services.Geocoder();
     const bounds = new kakao.maps.LatLngBounds();
-    const results = await Promise.all(restaurants.map(restaurant => this.findRestaurantPlace(places, restaurant, center)));
+    const results = await Promise.all(restaurants.map(restaurant => this.findRestaurantPlace(places, geocoder, restaurant, center)));
 
     results.forEach(({ restaurant, place }, index) => {
-      const lat = Number(place?.y || restaurant.fallbackLat);
-      const lng = Number(place?.x || restaurant.fallbackLng);
+      const lat = Number(place?.y || restaurant.coords?.lat || restaurant.fallbackLat);
+      const lng = Number(place?.x || restaurant.coords?.lng || restaurant.fallbackLng);
       const position = new kakao.maps.LatLng(lat, lng);
       const marker = new kakao.maps.Marker({
         map: this.restaurantMap,
@@ -2574,26 +2602,105 @@ class App {
       }
     });
 
+    const userLocation = await this.getUserMapLocation();
+    if (userLocation) {
+      const userPosition = new kakao.maps.LatLng(userLocation.lat, userLocation.lng);
+      const userMarker = new kakao.maps.Marker({
+        map: this.restaurantMap,
+        position: userPosition,
+        title: "현재 위치"
+      });
+      const userInfoWindow = new kakao.maps.InfoWindow({
+        content: `
+          <div class="kakao-restaurant-info">
+            <strong>현재 위치</strong>
+            <span>위도 ${this.escapeHtml(userLocation.lat.toFixed(5))} · 경도 ${this.escapeHtml(userLocation.lng.toFixed(5))}</span>
+          </div>
+        `
+      });
+
+      kakao.maps.event.addListener(userMarker, "click", () => {
+        this.restaurantInfoWindows.forEach(windowItem => windowItem.close());
+        userInfoWindow.open(this.restaurantMap, userMarker);
+      });
+
+      this.restaurantMarkers.push(userMarker);
+      this.restaurantInfoWindows.push(userInfoWindow);
+      bounds.extend(userPosition);
+      if (locationStatus) {
+        locationStatus.textContent = "현재 위치 표시 완료";
+      }
+    } else if (locationStatus) {
+      locationStatus.textContent = "현재 위치 권한이 없거나 사용할 수 없습니다.";
+    }
+
     if (restaurants.length > 1) {
       this.restaurantMap.setBounds(bounds);
     }
   }
 
-  findRestaurantPlace(places, restaurant, center) {
+  getUserMapLocation() {
+    if (!navigator.geolocation) {
+      return Promise.resolve(null);
+    }
+
+    return new Promise(resolve => {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        () => resolve(null),
+        {
+          enableHighAccuracy: true,
+          timeout: 7000,
+          maximumAge: 60000
+        }
+      );
+    });
+  }
+
+  findRestaurantPlace(places, geocoder, restaurant, center) {
     return new Promise(resolve => {
       places.keywordSearch(
         restaurant.query,
         (result, status) => {
-          const place = status === kakao.maps.services.Status.OK && result.length > 0 ? result[0] : null;
-          resolve({ restaurant, place });
+          const place = status === kakao.maps.services.Status.OK && result.length > 0
+            ? this.selectBestRestaurantPlace(result, restaurant)
+            : null;
+
+          if (place || !restaurant.address || !geocoder?.addressSearch) {
+            resolve({ restaurant, place });
+            return;
+          }
+
+          geocoder.addressSearch(restaurant.address, (addressResult, addressStatus) => {
+            const coords = addressStatus === kakao.maps.services.Status.OK && addressResult.length > 0
+              ? { lat: Number(addressResult[0].y), lng: Number(addressResult[0].x) }
+              : null;
+            resolve({ restaurant: { ...restaurant, coords }, place });
+          });
         },
         {
           location: center,
-          radius: 1800,
-          size: 1
+          radius: 2600,
+          size: 5,
+          sort: kakao.maps.services.SortBy.DISTANCE
         }
       );
     });
+  }
+
+  selectBestRestaurantPlace(results, restaurant) {
+    const normalize = value => String(value || "").replace(/\s+/g, "").toLowerCase();
+    const targetName = normalize(restaurant.placeName);
+    const targetAddress = normalize(restaurant.address);
+
+    return results.find(place => normalize(place.place_name).includes(targetName))
+      || results.find(place => targetAddress && normalize(place.road_address_name || place.address_name).includes(targetAddress))
+      || results[0];
   }
 
   clearRestaurantMap() {

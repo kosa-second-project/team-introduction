@@ -81,7 +81,6 @@
               </div>
               <p class="intro-subtitle">2조 스터디와 개인 포트폴리오를 담은 개발자 도감</p>
               <div class="start-prompt blink" id="start-prompt-btn">PRESS START</div>
-              <div class="geolocation-info" id="geo-info">GPS 확인 중...</div>
             </div>
           </div>
         </div>
@@ -215,6 +214,9 @@
                 <h2 class="ending-title">전설의 개발자 트레이너!</h2>
               </div>
               <p class="ending-subtitle">4명의 개발자몬 도감을 모두 완성했습니다!</p>
+              <div class="ending-video-frame">
+                <video id="ending-video" class="ending-video" src="assets/story/ending.mp4" controls playsinline preload="metadata"></video>
+              </div>
               <div class="ending-dev-showcase" id="ending-dev-showcase">
                 <!-- 4 developer cards will be injected here -->
               </div>
@@ -308,8 +310,9 @@
                   <div class="restaurant-map-card" id="restaurant-map-card">
                     <div class="restaurant-map-copy">
                       <div class="team-kicker">LUNCH MAP</div>
-                      <h3>경찰병원역 점심 픽</h3>
-                      <p>식권대장 후보로 넣어둔 2조의 밥집 리스트입니다.</p>
+                      <h3>2조 맛집 지도</h3>
+                      <p>각자 좋아하는 식당을 카카오맵 위치와 함께 모았습니다.</p>
+                      <p class="restaurant-location-status" id="restaurant-location-status">현재 위치 확인 전</p>
                     </div>
                     <div class="restaurant-map-layout">
                       <div class="restaurant-map-view" id="restaurant-map-view">
@@ -448,10 +451,10 @@
     
   </div>
 
-  <script src="data.js?v=20260529-profile-assets"></script>
+  <script src="data.js?v=20260529-kakao-map-key-2"></script>
   <script src="audio.js?v=20260528-monitor-sprites"></script>
   <script src="engine.js?v=20260528-battle-pokemon"></script>
   <script src="dragdrop.js?v=20260529-lunch-map"></script>
-  <script src="app.js?v=20260529-profile-assets"></script>
+  <script src="app.js?v=20260529-team2-content-map"></script>
 </body>
 </html>
