@@ -1224,6 +1224,17 @@ class App {
     const splash = document.getElementById("encounter-splash");
     if (!splash) return;
 
+    const enemy = this.activeEnemy;
+    const splashImage = splash.querySelector(".encounter-mon-img");
+    const splashLabel = splash.querySelector(".encounter-copy strong");
+    if (enemy && splashImage) {
+      splashImage.src = enemy.image;
+      splashImage.alt = `야생 ${enemy.name}`;
+    }
+    if (enemy && splashLabel) {
+      splashLabel.textContent = `야생 ${enemy.name} 발견!`;
+    }
+
     splash.classList.remove("hidden");
     splash.style.animation = "none";
     void splash.offsetWidth;
