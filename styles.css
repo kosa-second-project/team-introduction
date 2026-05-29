@@ -981,8 +981,9 @@ body {
 
 #panel-battle .enemy-hud {
   position: absolute;
-  left: 7%;
-  top: 18%;
+  right: 8%;
+  top: 10%;
+  width: 238px;
   margin: 0;
 }
 
@@ -1003,10 +1004,7 @@ body {
 }
 
 #panel-battle .player-hud {
-  position: absolute;
-  right: 7%;
-  bottom: 13%;
-  margin: 0;
+  display: none;
 }
 
 #panel-battle .battle-sprite-box canvas {
