@@ -72,6 +72,7 @@ class App {
     this.restaurantInfoWindows = [];
     this.restaurantUserMarker = null;
     this.restaurantUserInfoWindow = null;
+    this.lastGeolocationError = null;
   }
 
   init() {
@@ -2568,7 +2569,7 @@ class App {
     fallback?.classList.add("hidden");
     this.clearRestaurantMap();
     if (locationStatus) {
-      locationStatus.textContent = "현재 위치 확인 중";
+      locationStatus.textContent = "현재 위치 표시 버튼을 눌러 권한을 허용해 주세요.";
     }
     const locationButton = document.getElementById("restaurant-location-btn");
 
@@ -2618,7 +2619,6 @@ class App {
       }
     });
 
-    await this.renderUserLocationOnRestaurantMap(bounds, false);
     if (locationButton) {
       locationButton.disabled = false;
     }
@@ -2629,30 +2629,76 @@ class App {
   }
 
   getUserMapLocation() {
-    if (!navigator.geolocation) {
+    this.lastGeolocationError = null;
+
+    if (!window.isSecureContext && !["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+      this.lastGeolocationError = { code: "INSECURE_CONTEXT" };
+      return Promise.resolve(null);
+    }
+
+    if (!window.navigator?.geolocation) {
+      this.lastGeolocationError = { code: "UNSUPPORTED" };
       return Promise.resolve(null);
     }
 
     return new Promise(resolve => {
-      navigator.geolocation.getCurrentPosition(
+      window.navigator.geolocation.getCurrentPosition(
         position => {
           resolve({
             lat: position.coords.latitude,
             lng: position.coords.longitude
           });
         },
-        () => resolve(null),
+        error => {
+          this.lastGeolocationError = error;
+          resolve(null);
+        },
         {
           enableHighAccuracy: true,
-          timeout: 7000,
+          timeout: 12000,
           maximumAge: 60000
         }
       );
     });
   }
 
+  async getGeolocationPermissionState() {
+    try {
+      if (!window.navigator?.permissions?.query) return "";
+      const permission = await window.navigator.permissions.query({ name: "geolocation" });
+      return permission.state || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  getGeolocationErrorMessage() {
+    const error = this.lastGeolocationError;
+    if (!error) {
+      return "현재 위치를 가져오지 못했습니다. 다시 눌러 주세요.";
+    }
+
+    if (error.code === "INSECURE_CONTEXT") {
+      return "현재 위치는 HTTPS 또는 localhost에서만 사용할 수 있습니다.";
+    }
+    if (error.code === "UNSUPPORTED") {
+      return "이 브라우저에서는 현재 위치를 지원하지 않습니다.";
+    }
+    if (error.code === 1) {
+      return "브라우저 위치 권한이 차단되었습니다. 주소창의 위치 권한을 허용한 뒤 다시 눌러 주세요.";
+    }
+    if (error.code === 2) {
+      return "기기 위치를 찾지 못했습니다. 위치 서비스를 켠 뒤 다시 눌러 주세요.";
+    }
+    if (error.code === 3) {
+      return "현재 위치 확인 시간이 초과되었습니다. 다시 눌러 주세요.";
+    }
+    return "현재 위치를 가져오지 못했습니다. 다시 눌러 주세요.";
+  }
+
   async renderUserLocationOnRestaurantMap(bounds = null, shouldOpen = false) {
     const locationStatus = document.getElementById("restaurant-location-status");
+    const locationButton = document.getElementById("restaurant-location-btn");
     if (!this.restaurantMap || !window.kakao?.maps) {
       if (locationStatus) {
         locationStatus.textContent = "카카오맵 연결 후 현재 위치를 표시합니다.";
@@ -2661,13 +2707,31 @@ class App {
     }
 
     if (locationStatus) {
-      locationStatus.textContent = "현재 위치 권한 요청 중";
+      locationStatus.textContent = "현재 위치 권한 요청 중입니다. 브라우저 알림에서 허용을 눌러 주세요.";
+    }
+    if (locationButton) {
+      locationButton.disabled = true;
+    }
+
+    const permissionState = await this.getGeolocationPermissionState();
+    if (permissionState === "denied") {
+      this.lastGeolocationError = { code: 1 };
+      if (locationStatus) {
+        locationStatus.textContent = this.getGeolocationErrorMessage();
+      }
+      if (locationButton) {
+        locationButton.disabled = false;
+      }
+      return null;
     }
 
     const userLocation = await this.getUserMapLocation();
     if (!userLocation) {
       if (locationStatus) {
-        locationStatus.textContent = "현재 위치 권한이 없거나 사용할 수 없습니다.";
+        locationStatus.textContent = this.getGeolocationErrorMessage();
+      }
+      if (locationButton) {
+        locationButton.disabled = false;
       }
       return null;
     }
@@ -2715,6 +2779,9 @@ class App {
     }
     if (locationStatus) {
       locationStatus.textContent = "현재 위치 표시 완료";
+    }
+    if (locationButton) {
+      locationButton.disabled = false;
     }
 
     return userLocation;
