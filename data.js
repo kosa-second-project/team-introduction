@@ -357,7 +357,7 @@ const DEVELOPER_PROFILES = {
     contact: "좋아하는 식당: 함경도찹쌀순대",
     stack: ["프론트엔드", "UI 점검", "디버깅", "사용자 흐름", "6월생"],
     links: [
-      { label: "GitHub Pages", url: "https://kimjunha1231.github.io/" },
+      { label: "Portfolio", url: "https://kimjunha-portfolio.vercel.app/ko" },
       { label: "역할: 화면 검증" },
       { label: "퀴즈 키워드: 6월" },
       { label: "점심 픽: 순댓국" }
